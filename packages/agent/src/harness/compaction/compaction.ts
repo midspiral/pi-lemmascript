@@ -347,7 +347,17 @@ export function findCutPoint(
 	//@ verify
 	//@ requires 0 <= startIndex
 	//@ requires endIndex <= entries.length
+	// Ordering assumption that verification forces explicit: within the active
+	// range, a toolResult is always immediately preceded by a message (its
+	// tool_use turn) — toolResults never float free after a metadata entry or at
+	// the range start. This is how pi's session tree is built; if it can be
+	// violated, the no-orphan guarantee below does not hold.
+	//@ requires forall(j: nat, startIndex < j && j < endIndex && entries[j].type === "message" && entries[j].message.role === "toolResult" ==> entries[j - 1].type === "message")
 	//@ ensures (startIndex <= \result.firstKeptEntryIndex && \result.firstKeptEntryIndex < endIndex && !(entries[\result.firstKeptEntryIndex].type === "message" && entries[\result.firstKeptEntryIndex].message.role === "toolResult")) || \result.firstKeptEntryIndex === startIndex
+	// No retained toolResult is orphaned: every toolResult in the kept suffix has
+	// its preceding tool_use turn retained too (the snap never splits a run). The
+	// startIndex fallback (no valid cut points) carries no such guarantee.
+	//@ ensures (forall(j: nat, \result.firstKeptEntryIndex <= j && j < endIndex && entries[j].type === "message" && entries[j].message.role === "toolResult" ==> 0 <= j - 1 && \result.firstKeptEntryIndex <= j - 1 && entries[j - 1].type === "message")) || \result.firstKeptEntryIndex === startIndex
 	const cutPoints = findValidCutPoints(entries, startIndex, endIndex);
 
 	if (cutPoints.length === 0) {

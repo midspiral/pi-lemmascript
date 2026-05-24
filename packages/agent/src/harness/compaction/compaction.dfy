@@ -105,7 +105,9 @@ method findValidCutPoints(entries: seq<SessionTreeEntry>, startIndex: int, endIn
 method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: int, keepRecentTokens: int) returns (res: CutPointResult)
   requires (0 <= startIndex)
   requires (endIndex <= |entries|)
+  requires forall j: nat :: ((startIndex < j) ==> (j < endIndex) ==> entries[j].message? ==> entries[j].message.role.toolResult? ==> entries[(j - 1)].message?)
   ensures ((((startIndex <= res.firstKeptEntryIndex) && (res.firstKeptEntryIndex < endIndex)) && !((entries[res.firstKeptEntryIndex].message? && entries[res.firstKeptEntryIndex].message.role.toolResult?))) || (res.firstKeptEntryIndex == startIndex))
+  ensures ((forall j: nat :: ((res.firstKeptEntryIndex <= j) ==> (j < endIndex) ==> entries[j].message? ==> entries[j].message.role.toolResult? ==> (((0 <= (j - 1)) && (res.firstKeptEntryIndex <= (j - 1))) && entries[(j - 1)].message?))) || (res.firstKeptEntryIndex == startIndex))
 {
   var i_t0 := findValidCutPoints(entries, startIndex, endIndex);
   var cutPoints := i_t0;
