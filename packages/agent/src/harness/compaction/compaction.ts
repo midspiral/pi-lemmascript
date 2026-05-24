@@ -18,6 +18,9 @@ import {
 	serializeConversation,
 } from "./utils.ts";
 
+//@ declare-type Role = "bashExecution" | "custom" | "branchSummary" | "compactionSummary" | "user" | "assistant" | "toolResult"
+//@ declare-type AgentMessage { role: Role }
+
 /** File-operation details stored on generated compaction entries. */
 export interface CompactionDetails {
 	/** Files read in the compacted history. */
@@ -259,8 +262,16 @@ export function estimateTokens(message: AgentMessage): number {
 	return 0;
 }
 function findValidCutPoints(entries: SessionTreeEntry[], startIndex: number, endIndex: number): number[] {
+	//@ verify
+	//@ requires 0 <= startIndex
+	//@ requires endIndex <= entries.length
+	//@ ensures forall(k: nat, k < \result.length ==> startIndex <= \result[k] && \result[k] < endIndex)
+	//@ ensures forall(k: nat, k < \result.length ==> !(entries[\result[k]].type === "message" && entries[\result[k]].message.role === "toolResult"))
 	const cutPoints: number[] = [];
 	for (let i = startIndex; i < endIndex; i++) {
+		//@ invariant startIndex <= i
+		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
+		//@ invariant forall(k: nat, k < cutPoints.length ==> !(entries[cutPoints[k]].type === "message" && entries[cutPoints[k]].message.role === "toolResult"))
 		const entry = entries[i];
 		switch (entry.type) {
 			case "message": {
