@@ -2,9 +2,15 @@
 
 datatype Option<T> = None | Some(value: T)
 
+function {:axiom} estimateTokens(message: AgentMessage): int
+
+function {:axiom} findTurnStartIndex(entries: seq<SessionTreeEntry>, entryIndex: int, startIndex: int): int
+
 datatype Role = bashExecution | custom | branchSummary | compactionSummary | user | assistant | toolResult
 
 datatype AgentMessage = AgentMessage(role: Role)
+
+datatype CutPointResult = CutPointResult(firstKeptEntryIndex: int, turnStartIndex: int, isSplitTurn: bool)
 
 type Opaque_TextContent_or_ImageContent(==)
 
@@ -94,4 +100,69 @@ method findValidCutPoints(entries: seq<SessionTreeEntry>, startIndex: int, endIn
     i := (i + 1);
   }
   return cutPoints;
+}
+
+method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: int, keepRecentTokens: int) returns (res: CutPointResult)
+  requires (0 <= startIndex)
+  requires (endIndex <= |entries|)
+  ensures ((((startIndex <= res.firstKeptEntryIndex) && (res.firstKeptEntryIndex < endIndex)) && !((entries[res.firstKeptEntryIndex].message? && entries[res.firstKeptEntryIndex].message.role.toolResult?))) || (res.firstKeptEntryIndex == startIndex))
+{
+  var i_t0 := findValidCutPoints(entries, startIndex, endIndex);
+  var cutPoints := i_t0;
+  if (|cutPoints| == 0) {
+    return CutPointResult(startIndex, -1, false);
+  }
+  var accumulatedTokens := 0;
+  var cutIndex := cutPoints[0];
+  var i := (endIndex - 1);
+  while (i >= startIndex)
+    invariant (i < endIndex)
+    invariant (startIndex <= cutIndex)
+    invariant (cutIndex < endIndex)
+    invariant !((entries[cutIndex].message? && entries[cutIndex].message.role.toolResult?))
+  {
+    var entry := entries[i];
+    match entry {
+      case message(i_entry_message, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+        var messageTokens := estimateTokens(i_entry_message);
+        accumulatedTokens := (accumulatedTokens + messageTokens);
+        if (accumulatedTokens >= keepRecentTokens) {
+          var c := 0;
+          while (c < |cutPoints|)
+            invariant (startIndex <= cutIndex)
+            invariant (cutIndex < endIndex)
+            invariant !((entries[cutIndex].message? && entries[cutIndex].message.role.toolResult?))
+          {
+            if (cutPoints[c] >= i) {
+              cutIndex := cutPoints[c];
+              break;
+            }
+            c := (c + 1);
+          }
+          break;
+        }
+        i := (i - 1);
+      case _ =>
+        i := (i - 1);
+    }
+  }
+  while (cutIndex > startIndex)
+    invariant (startIndex <= cutIndex)
+    invariant (cutIndex < endIndex)
+    invariant !((entries[cutIndex].message? && entries[cutIndex].message.role.toolResult?))
+  {
+    var prevEntry := entries[(cutIndex - 1)];
+    match prevEntry {
+      case compaction(i_prevEntry_summary, i_prevEntry_firstKeptEntryId, i_prevEntry_tokensBefore, i_prevEntry_details, i_prevEntry_fromHook, i_prevEntry_id, i_prevEntry_parentId, i_prevEntry_timestamp) =>
+        break;
+      case message(i_prevEntry_message, i_prevEntry_id, i_prevEntry_parentId, i_prevEntry_timestamp) =>
+        break;
+      case _ =>
+        cutIndex := (cutIndex - 1);
+    }
+  }
+  var cutEntry := entries[cutIndex];
+  var isUserMessage := (cutEntry.message? && cutEntry.message.role.user?);
+  var turnStartIndex := (if isUserMessage then -1 else findTurnStartIndex(entries, cutIndex, startIndex));
+  return CutPointResult(cutIndex, turnStartIndex, (!(isUserMessage) && (turnStartIndex != -1)));
 }

@@ -202,6 +202,7 @@ export function shouldCompact(contextTokens: number, contextWindow: number, sett
 }
 
 /** Estimate token count for one message using a conservative character heuristic. */
+//@ extern
 export function estimateTokens(message: AgentMessage): number {
 	let chars = 0;
 
@@ -309,6 +310,7 @@ function findValidCutPoints(entries: SessionTreeEntry[], startIndex: number, end
 }
 
 /** Find the user-visible message that starts the turn containing an entry. */
+//@ extern
 export function findTurnStartIndex(entries: SessionTreeEntry[], entryIndex: number, startIndex: number): number {
 	for (let i = entryIndex; i >= startIndex; i--) {
 		const entry = entries[i];
@@ -342,6 +344,10 @@ export function findCutPoint(
 	endIndex: number,
 	keepRecentTokens: number,
 ): CutPointResult {
+	//@ verify
+	//@ requires 0 <= startIndex
+	//@ requires endIndex <= entries.length
+	//@ ensures (startIndex <= \result.firstKeptEntryIndex && \result.firstKeptEntryIndex < endIndex && !(entries[\result.firstKeptEntryIndex].type === "message" && entries[\result.firstKeptEntryIndex].message.role === "toolResult")) || \result.firstKeptEntryIndex === startIndex
 	const cutPoints = findValidCutPoints(entries, startIndex, endIndex);
 
 	if (cutPoints.length === 0) {
@@ -351,12 +357,17 @@ export function findCutPoint(
 	let cutIndex = cutPoints[0];
 
 	for (let i = endIndex - 1; i >= startIndex; i--) {
+		//@ invariant i < endIndex
+		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
+		//@ invariant !(entries[cutIndex].type === "message" && entries[cutIndex].message.role === "toolResult")
 		const entry = entries[i];
 		if (entry.type !== "message") continue;
 		const messageTokens = estimateTokens(entry.message as AgentMessage);
 		accumulatedTokens += messageTokens;
 		if (accumulatedTokens >= keepRecentTokens) {
 			for (let c = 0; c < cutPoints.length; c++) {
+				//@ invariant startIndex <= cutIndex && cutIndex < endIndex
+				//@ invariant !(entries[cutIndex].type === "message" && entries[cutIndex].message.role === "toolResult")
 				if (cutPoints[c] >= i) {
 					cutIndex = cutPoints[c];
 					break;
@@ -366,6 +377,8 @@ export function findCutPoint(
 		}
 	}
 	while (cutIndex > startIndex) {
+		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
+		//@ invariant !(entries[cutIndex].type === "message" && entries[cutIndex].message.role === "toolResult")
 		const prevEntry = entries[cutIndex - 1];
 		if (prevEntry.type === "compaction") {
 			break;
