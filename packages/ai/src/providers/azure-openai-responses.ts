@@ -1,6 +1,5 @@
 import { AzureOpenAI } from "openai";
 import type { ResponseCreateParamsStreaming } from "openai/resources/responses/responses.js";
-import { getEnvApiKey } from "../env-api-keys.ts";
 import { clampThinkingLevel } from "../models.ts";
 import type {
 	Api,
@@ -101,7 +100,10 @@ export const streamAzureOpenAIResponses: StreamFunction<"azure-openai-responses"
 
 		try {
 			// Create Azure OpenAI client
-			const apiKey = options?.apiKey || getEnvApiKey(model.provider) || "";
+			const apiKey = options?.apiKey;
+			if (!apiKey) {
+				throw new Error(`No API key for provider: ${model.provider}`);
+			}
 			const client = createClient(model, apiKey, options);
 			let params = buildParams(model, context, options, deploymentName);
 			const nextParams = await options?.onPayload?.(params, model);
@@ -111,7 +113,7 @@ export const streamAzureOpenAIResponses: StreamFunction<"azure-openai-responses"
 			const requestOptions = {
 				...(options?.signal ? { signal: options.signal } : {}),
 				...(options?.timeoutMs !== undefined ? { timeout: options.timeoutMs } : {}),
-				...(options?.maxRetries !== undefined ? { maxRetries: options.maxRetries } : {}),
+				maxRetries: options?.maxRetries ?? 0,
 			};
 			const { data: openaiStream, response } = await client.responses.create(params, requestOptions).withResponse();
 			await options?.onResponse?.({ status: response.status, headers: headersToRecord(response.headers) }, model);
@@ -150,7 +152,7 @@ export const streamSimpleAzureOpenAIResponses: StreamFunction<"azure-openai-resp
 	context: Context,
 	options?: SimpleStreamOptions,
 ): AssistantMessageEventStream => {
-	const apiKey = options?.apiKey || getEnvApiKey(model.provider);
+	const apiKey = options?.apiKey;
 	if (!apiKey) {
 		throw new Error(`No API key for provider: ${model.provider}`);
 	}
@@ -224,15 +226,6 @@ function resolveAzureConfig(
 }
 
 function createClient(model: Model<"azure-openai-responses">, apiKey: string, options?: AzureOpenAIResponsesOptions) {
-	if (!apiKey) {
-		if (!process.env.AZURE_OPENAI_API_KEY) {
-			throw new Error(
-				"Azure OpenAI API key is required. Set AZURE_OPENAI_API_KEY environment variable or pass it as an argument.",
-			);
-		}
-		apiKey = process.env.AZURE_OPENAI_API_KEY;
-	}
-
 	const headers = { ...model.headers };
 
 	if (options?.headers) {
