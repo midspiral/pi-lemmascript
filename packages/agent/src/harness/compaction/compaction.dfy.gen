@@ -16,13 +16,15 @@ type Opaque_TextContent_or_ImageContent(==)
 
 datatype ArrayOf_Opaque_TextContent_or_ImageContent_Or_string = ArrayBranch(arr: seq<Opaque_TextContent_or_ImageContent>) | NonArrayBranch(val: string)
 
-datatype SessionTreeEntry = message(message: AgentMessage, id: string, parentId: Option<string>, timestamp: string) | thinking_level_change(thinkingLevel: string, id: string, parentId: Option<string>, timestamp: string) | model_change(provider: string, modelId: string, id: string, parentId: Option<string>, timestamp: string) | compaction(summary: string, firstKeptEntryId: string, tokensBefore: int, details: Option<int>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string) | branch_summary(fromId: string, summary: string, details: Option<int>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string) | custom(customType: string, data: Option<int>, id: string, parentId: Option<string>, timestamp: string) | custom_message(customType: string, content: ArrayOf_Opaque_TextContent_or_ImageContent_Or_string, details: Option<int>, display: bool, id: string, parentId: Option<string>, timestamp: string) | label_(targetId_label: string, label_: Option<string>, id: string, parentId: Option<string>, timestamp: string) | session_info(name: Option<string>, id: string, parentId: Option<string>, timestamp: string) | leaf(targetId_leaf: Option<string>, id: string, parentId: Option<string>, timestamp: string)
+datatype SessionTreeEntry = message(message: AgentMessage, id: string, parentId: Option<string>, timestamp: string) | thinking_level_change(thinkingLevel: string, id: string, parentId: Option<string>, timestamp: string) | model_change(provider: string, modelId: string, id: string, parentId: Option<string>, timestamp: string) | active_tools_change(activeToolNames: seq<string>, id: string, parentId: Option<string>, timestamp: string) | compaction(summary: string, firstKeptEntryId: string, tokensBefore: int, details: Option<int>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string) | branch_summary(fromId: string, summary: string, details: Option<int>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string) | custom(customType: string, data: Option<int>, id: string, parentId: Option<string>, timestamp: string) | custom_message(customType: string, content: ArrayOf_Opaque_TextContent_or_ImageContent_Or_string, details: Option<int>, display: bool, id: string, parentId: Option<string>, timestamp: string) | label_(targetId_label: string, label_: Option<string>, id: string, parentId: Option<string>, timestamp: string) | session_info(name: Option<string>, id: string, parentId: Option<string>, timestamp: string) | leaf(targetId_leaf: Option<string>, id: string, parentId: Option<string>, timestamp: string)
 
 datatype MessageEntry = MessageEntry(type_: string, message: AgentMessage, id: string, parentId: Option<string>, timestamp: string)
 
 datatype ThinkingLevelChangeEntry = ThinkingLevelChangeEntry(type_: string, thinkingLevel: string, id: string, parentId: Option<string>, timestamp: string)
 
 datatype ModelChangeEntry = ModelChangeEntry(type_: string, provider: string, modelId: string, id: string, parentId: Option<string>, timestamp: string)
+
+datatype ActiveToolsChangeEntry = ActiveToolsChangeEntry(type_: string, activeToolNames: seq<string>, id: string, parentId: Option<string>, timestamp: string)
 
 datatype CompactionEntry = CompactionEntry(type_: string, summary: string, firstKeptEntryId: string, tokensBefore: int, details: Option<int>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string)
 
@@ -78,6 +80,8 @@ method findValidCutPoints(entries: seq<SessionTreeEntry>, startIndex: int, endIn
       case thinking_level_change(i_entry_thinkingLevel, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
 
       case model_change(i_entry_provider, i_entry_modelId, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+
+      case active_tools_change(i_entry_activeToolNames, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
 
       case compaction(i_entry_summary, i_entry_firstKeptEntryId, i_entry_tokensBefore, i_entry_details, i_entry_fromHook, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
 
