@@ -14,7 +14,7 @@ If you use an agent, run it from the `pi-mono` root directory so it picks up `AG
 
 All issues and PRs from new contributors are auto-closed by default.
 
-Issues submitted Friday through Sunday are not reviewed. If something is urgent, ask on Discord: https://discord.com/invite/3cU7Bz4UPx
+Issues submitted Friday through Sunday are not guaranteed to be reviewed.  If something is urgent, ask on Discord: https://discord.com/invite/3cU7Bz4UPx
 
 Maintainers review auto-closed issues daily and reopen worthwhile ones. Issues that do not meet the quality bar below will not be reopened or receive a reply.
 
@@ -76,9 +76,9 @@ Ask on [Discord](https://discord.com/invite/nKXTsAcmbT).
 
 pi receives more issues than the maintainers can responsibly review in real time. Many reports do not meet the quality bar in this guide or do not follow CONTRIBUTING.md. Some are slung at the repository mindlessly via an agent instead of being reviewed and shaped by the person submitting them. Auto-closing creates a buffer so maintainers can review the tracker on their own schedule and reopen the issues that meet the quality bar.
 
-### Why are weekend issues not reviewed?
+### Why are weekend issues lower priority?
 
-Maintainers need uninterrupted time away from the issue tracker. Issues submitted Friday through Sunday are auto-closed and are not part of the Monday review queue. If a problem is urgent, ask on Discord and include the short version, a repro, and the relevant logs.
+We triage the tracker during working hours. That means more issues can accumulate over the weekend. Anything submitted Friday through Sunday may be missed or given lower priority in the Monday review queue. If a problem is urgent, ask on Discord and include the short version, a repro, and the relevant logs.
 
 ### Why do some issues get no reply?
 
