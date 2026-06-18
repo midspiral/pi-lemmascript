@@ -1,5 +1,8 @@
 # pi — Verified with LemmaScript
 
+[![LemmaScript: verified](https://img.shields.io/badge/LemmaScript-verified-brightgreen)](https://github.com/midspiral/pi-lemmascript/actions/workflows/lemmascript.yml)
+
+
 Fork of **pi** (the [earendil-works](https://pi.dev) agent harness) applying [LemmaScript](https://github.com/midspiral/LemmaScript)'s Dafny backend to its context-compaction **cut-point selector**. Annotations are added **in-place** — function bodies and signatures are unchanged; everything goes through `//@` comments. [View as diff](https://github.com/midspiral/pi-lemmascript/compare/main..lemmascript).
 
 When the context window fills, pi compacts history: it picks a cut point and discards everything before it. A provider API rejects a message list whose retained prefix contains an **orphaned `toolResult`** — a tool result with no preceding tool call still in context. So the cut must never land such that the kept suffix *starts with* an orphaned tool result, and never *splits a tool-use/tool-result run*. We prove exactly those properties, in place, for both functions of the selector in [`packages/agent/src/harness/compaction/compaction.ts`](https://github.com/midspiral/pi-lemmascript/blob/lemmascript/packages/agent/src/harness/compaction/compaction.ts).
