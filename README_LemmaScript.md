@@ -6,7 +6,7 @@ Fork of **pi** (the [earendil-works](https://pi.dev) agent harness) applying [Le
 
 When the context window fills, pi compacts history: it picks a cut point and discards everything before it. A provider API rejects a message list whose retained prefix contains an **orphaned `toolResult`** — a tool result with no preceding tool call still in context. So the cut must never land such that the kept suffix *starts with* an orphaned tool result, and never *splits a tool-use/tool-result run*. We prove exactly those properties, in place, for both functions of the selector in [`packages/agent/src/harness/compaction/compaction.ts`](packages/agent/src/harness/compaction/compaction.ts), and in the shipped CLI's own copy [`packages/coding-agent/src/core/compaction/compaction.ts`](packages/coding-agent/src/core/compaction/compaction.ts).
 
-`check.sh dafny` → **0 errors** — the runtime-library file proves the two no-orphan properties below; the shipped CLI copy additionally proves a *turn-split* property (when the cut splits a turn, the reported turn start is a real turn boundary at or before the cut). The case study drove six LemmaScript additions — string-union `declare-type`, faithful JS-`switch` lowering, an opaque fall-through type for unions that can't be discriminated, per-constructor destructor renaming for field-name collisions, `//@ extern` signature normalization, and string-union typing for local bindings — see [Notes for LemmaScript](#notes-for-lemmascript).
+`check.sh dafny` → **8 verified, 0 errors** each. Both files prove the two no-orphan properties below and a *turn-split* property (when the cut splits a turn, the reported turn start is a real turn boundary at or before the cut). The case study drove six LemmaScript additions — string-union `declare-type`, faithful JS-`switch` lowering, an opaque fall-through type for unions that can't be discriminated, per-constructor destructor renaming for field-name collisions, `//@ extern` signature normalization, and string-union typing for local bindings — see [Notes for LemmaScript](#notes-for-lemmascript).
 
 ## What's Verified
 
@@ -21,10 +21,11 @@ The second is the one with teeth: the source `switch` uses C-style fall-through 
 
 ### `findCutPoint` — [`compaction.ts:341`](https://github.com/midspiral/pi-lemmascript/blob/lemmascript/packages/agent/src/harness/compaction/compaction.ts#L341)
 
-Walks back from the end accumulating an (opaque) token estimate until it reaches `keepRecentTokens`, snaps to the nearest valid cut point, then snaps *backward* over metadata entries. Two `//@ ensures` over the chosen `firstKeptEntryIndex`:
+Walks back from the end accumulating an (opaque) token estimate until it reaches `keepRecentTokens`, snaps to the nearest valid cut point, then snaps *backward* over metadata entries. Three `//@ ensures` over the chosen `firstKeptEntryIndex`:
 
 - **The snap can't undo safety.** `firstKeptEntryIndex` is in `[startIndex, endIndex)` and is not a `toolResult` message — even after the backward snap moves the cut earlier past metadata. (The subtle part: proving the snap *breaks on any message*, so it can't slide onto a tool result.)
 - **No retained `toolResult` is orphaned.** Every `toolResult` in the kept suffix has its preceding tool-use turn retained too — the cut never splits a tool-use/tool-result run. This holds because the cut lands on a non-`toolResult`, so it can never fall *inside* a run.
+- **A split turn names a real boundary.** When the cut falls mid-turn (`isSplitTurn`), the reported `turnStartIndex` is an in-range turn boundary at or before the cut — a `user`/`bashExecution` message or a branch-summary/custom-message entry. Proven via the (verified, non-opaque) `findTurnStartIndex`.
 
 Both carry an honest fallback caveat: when there are no valid cut points at all, the function returns `startIndex` unchanged, and the `ensures` disjoins on `|| firstKeptEntryIndex === startIndex` rather than pretending the degenerate fallback is safe.
 
@@ -33,7 +34,7 @@ Both carry an honest fallback caveat: when there are no valid cut points at all,
 These properties hold relative to assumptions made explicit in the annotations — nothing is hidden behind the proof:
 
 - **Type shadows.** The unreachable `@earendil-works/pi-ai` message graph is shadowed down to what the selector reads: `//@ declare-type Role = "user" | "assistant" | "toolResult" | …` and `//@ declare-type AgentMessage { role: Role }`. `SessionTreeEntry` itself auto-resolves; its `custom_message.content` (an unmodelable union) becomes an opaque type, present but uninspectable.
-- **Opaque helpers.** `estimateTokens` is `//@ extern` — uninterpreted. It reads message fields outside the shadow, so it *must* be opaque; the safety proofs don't depend on its value, only on which entries are messages. (`findTurnStartIndex` is `//@ extern` in the runtime-library file, but verified in the CLI copy, where it underwrites the turn-split property.)
+- **Opaque helpers.** `estimateTokens` is `//@ extern` — uninterpreted. It reads message fields outside the shadow, so it *must* be opaque; the safety proofs don't depend on its value, only on which entries are messages.
 - **Valid-input `requires`.** `0 <= startIndex`, `endIndex <= entries.length`, and — for the no-orphan result — an explicit ordering precondition: *within the range, a `toolResult` is always immediately preceded by a message (its tool-use turn).* This is the assumption verification forced into the open; if pi's session tree can ever violate it, the no-orphan guarantee is where that would surface.
 
 ## Not (yet) verified

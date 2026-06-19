@@ -275,6 +275,17 @@ function isToolResultMessage(entry: SessionTreeEntry): boolean {
 	//@ verify
 	return entry.type === "message" && entry.message.role === "toolResult";
 }
+
+// A turn boundary: a user/bashExecution message, or a branch-summary/custom-message entry.
+// biome-ignore lint/correctness/noUnusedVariables: spec-only predicate referenced in //@ contracts
+function isTurnStarter(entry: SessionTreeEntry): boolean {
+	//@ verify
+	return (
+		entry.type === "branch_summary" ||
+		entry.type === "custom_message" ||
+		(entry.type === "message" && (entry.message.role === "user" || entry.message.role === "bashExecution"))
+	);
+}
 function findValidCutPoints(entries: SessionTreeEntry[], startIndex: number, endIndex: number): number[] {
 	//@ verify
 	//@ requires 0 <= startIndex
@@ -324,9 +335,13 @@ function findValidCutPoints(entries: SessionTreeEntry[], startIndex: number, end
 }
 
 /** Find the user-visible message that starts the turn containing an entry. */
-//@ extern
+//@ verify
+//@ requires 0 <= startIndex
+//@ requires entryIndex < entries.length
+//@ ensures \result === -1 || (startIndex <= \result && \result <= entryIndex && isTurnStarter(entries[\result]))
 export function findTurnStartIndex(entries: SessionTreeEntry[], entryIndex: number, startIndex: number): number {
 	for (let i = entryIndex; i >= startIndex; i--) {
+		//@ invariant i <= entryIndex
 		const entry = entries[i];
 		if (entry.type === "branch_summary" || entry.type === "custom_message") {
 			return i;
@@ -372,6 +387,8 @@ export function findCutPoint(
 	// its preceding tool_use turn retained too (the snap never splits a run). The
 	// startIndex fallback (no valid cut points) carries no such guarantee.
 	//@ ensures (forall(j: nat, \result.firstKeptEntryIndex <= j && j < endIndex && isToolResultMessage(entries[j]) ==> 0 <= j - 1 && \result.firstKeptEntryIndex <= j - 1 && entries[j - 1].type === "message")) || \result.firstKeptEntryIndex === startIndex
+	// A split turn always names a real turn-starter at or before the cut, in range.
+	//@ ensures \result.isSplitTurn ==> (0 <= \result.turnStartIndex && \result.turnStartIndex < entries.length && startIndex <= \result.turnStartIndex && \result.turnStartIndex <= \result.firstKeptEntryIndex && isTurnStarter(entries[\result.turnStartIndex]))
 	const cutPoints = findValidCutPoints(entries, startIndex, endIndex);
 
 	if (cutPoints.length === 0) {
