@@ -44,18 +44,23 @@ datatype SessionInfoEntry = SessionInfoEntry(type_: string, name: Option<string>
 
 datatype LeafEntry = LeafEntry(type_: string, targetId: Option<string>, id: string, parentId: Option<string>, timestamp: string)
 
+function isToolResultMessage(entry: SessionTreeEntry): bool
+{
+  (entry.message? && entry.message.role.toolResult?)
+}
+
 method findValidCutPoints(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: int) returns (res: seq<int>)
   requires (0 <= startIndex)
   requires (endIndex <= |entries|)
   ensures forall k: nat :: ((k < |res|) ==> ((startIndex <= res[k]) && (res[k] < endIndex)))
-  ensures forall k: nat :: ((k < |res|) ==> !((entries[res[k]].message? && entries[res[k]].message.role.toolResult?)))
+  ensures forall k: nat :: ((k < |res|) ==> !(isToolResultMessage(entries[res[k]])))
 {
   var cutPoints: seq<int> := [];
   var i := startIndex;
   while (i < endIndex)
     invariant (startIndex <= i)
     invariant forall k: nat :: ((k < |cutPoints|) ==> ((startIndex <= cutPoints[k]) && (cutPoints[k] < endIndex)))
-    invariant forall k: nat :: ((k < |cutPoints|) ==> !((entries[cutPoints[k]].message? && entries[cutPoints[k]].message.role.toolResult?)))
+    invariant forall k: nat :: ((k < |cutPoints|) ==> !(isToolResultMessage(entries[cutPoints[k]])))
   {
     var entry := entries[i];
     match entry {
@@ -109,9 +114,9 @@ method findValidCutPoints(entries: seq<SessionTreeEntry>, startIndex: int, endIn
 method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: int, keepRecentTokens: int) returns (res: CutPointResult)
   requires (0 <= startIndex)
   requires (endIndex <= |entries|)
-  requires forall j: nat :: ((startIndex < j) ==> (j < endIndex) ==> entries[j].message? ==> entries[j].message.role.toolResult? ==> entries[(j - 1)].message?)
-  ensures ((((startIndex <= res.firstKeptEntryIndex) && (res.firstKeptEntryIndex < endIndex)) && !((entries[res.firstKeptEntryIndex].message? && entries[res.firstKeptEntryIndex].message.role.toolResult?))) || (res.firstKeptEntryIndex == startIndex))
-  ensures ((forall j: nat :: ((res.firstKeptEntryIndex <= j) ==> (j < endIndex) ==> entries[j].message? ==> entries[j].message.role.toolResult? ==> (((0 <= (j - 1)) && (res.firstKeptEntryIndex <= (j - 1))) && entries[(j - 1)].message?))) || (res.firstKeptEntryIndex == startIndex))
+  requires forall j: nat :: ((startIndex < j) ==> (j < endIndex) ==> isToolResultMessage(entries[j]) ==> entries[(j - 1)].message?)
+  ensures ((((startIndex <= res.firstKeptEntryIndex) && (res.firstKeptEntryIndex < endIndex)) && !(isToolResultMessage(entries[res.firstKeptEntryIndex]))) || (res.firstKeptEntryIndex == startIndex))
+  ensures ((forall j: nat :: ((res.firstKeptEntryIndex <= j) ==> (j < endIndex) ==> isToolResultMessage(entries[j]) ==> (((0 <= (j - 1)) && (res.firstKeptEntryIndex <= (j - 1))) && entries[(j - 1)].message?))) || (res.firstKeptEntryIndex == startIndex))
 {
   var i_t0 := findValidCutPoints(entries, startIndex, endIndex);
   var cutPoints := i_t0;
@@ -125,7 +130,7 @@ method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: i
     invariant (i < endIndex)
     invariant (startIndex <= cutIndex)
     invariant (cutIndex < endIndex)
-    invariant !((entries[cutIndex].message? && entries[cutIndex].message.role.toolResult?))
+    invariant !(isToolResultMessage(entries[cutIndex]))
   {
     var entry := entries[i];
     match entry {
@@ -137,7 +142,7 @@ method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: i
           while (c < |cutPoints|)
             invariant (startIndex <= cutIndex)
             invariant (cutIndex < endIndex)
-            invariant !((entries[cutIndex].message? && entries[cutIndex].message.role.toolResult?))
+            invariant !(isToolResultMessage(entries[cutIndex]))
           {
             if (cutPoints[c] >= i) {
               cutIndex := cutPoints[c];
@@ -155,7 +160,7 @@ method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: i
   while (cutIndex > startIndex)
     invariant (startIndex <= cutIndex)
     invariant (cutIndex < endIndex)
-    invariant !((entries[cutIndex].message? && entries[cutIndex].message.role.toolResult?))
+    invariant !(isToolResultMessage(entries[cutIndex]))
   {
     var prevEntry := entries[(cutIndex - 1)];
     match prevEntry {

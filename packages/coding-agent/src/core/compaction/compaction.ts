@@ -294,6 +294,13 @@ export function estimateTokens(message: AgentMessage): number {
 	return 0;
 }
 
+// A cut here would orphan a tool result from its tool call (provider API rejects it).
+// biome-ignore lint/correctness/noUnusedVariables: spec-only predicate referenced in //@ contracts
+function isToolResultMessage(entry: SessionEntry): boolean {
+	//@ verify
+	return entry.type === "message" && entry.message.role === "toolResult";
+}
+
 /**
  * Find valid cut points: indices of user, assistant, custom, or bashExecution messages.
  * Never cut at tool results (they must follow their tool call).
@@ -305,13 +312,13 @@ export function estimateTokens(message: AgentMessage): number {
 //@ requires 0 <= startIndex
 //@ requires endIndex <= entries.length
 //@ ensures forall(k: nat, k < \result.length ==> startIndex <= \result[k] && \result[k] < endIndex)
-//@ ensures forall(k: nat, k < \result.length ==> !(entries[\result[k]].type === "message" && entries[\result[k]].message.role === "toolResult"))
+//@ ensures forall(k: nat, k < \result.length ==> !isToolResultMessage(entries[\result[k]]))
 function findValidCutPoints(entries: SessionEntry[], startIndex: number, endIndex: number): number[] {
 	const cutPoints: number[] = [];
 	for (let i = startIndex; i < endIndex; i++) {
 		//@ invariant startIndex <= i
 		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
-		//@ invariant forall(k: nat, k < cutPoints.length ==> !(entries[cutPoints[k]].type === "message" && entries[cutPoints[k]].message.role === "toolResult"))
+		//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
 		const entry = entries[i];
 		switch (entry.type) {
 			case "message": {
@@ -414,11 +421,11 @@ export function findCutPoint(
 	// Ordering assumption verification forces explicit: within the active range, a
 	// toolResult is always immediately preceded by a message (its tool_use turn) —
 	// toolResults never float free after a metadata entry or at the range start.
-	//@ requires forall(j: nat, startIndex < j && j < endIndex && entries[j].type === "message" && entries[j].message.role === "toolResult" ==> entries[j - 1].type === "message")
-	//@ ensures (startIndex <= \result.firstKeptEntryIndex && \result.firstKeptEntryIndex < endIndex && !(entries[\result.firstKeptEntryIndex].type === "message" && entries[\result.firstKeptEntryIndex].message.role === "toolResult")) || \result.firstKeptEntryIndex === startIndex
+	//@ requires forall(j: nat, startIndex < j && j < endIndex && isToolResultMessage(entries[j]) ==> entries[j - 1].type === "message")
+	//@ ensures (startIndex <= \result.firstKeptEntryIndex && \result.firstKeptEntryIndex < endIndex && !isToolResultMessage(entries[\result.firstKeptEntryIndex])) || \result.firstKeptEntryIndex === startIndex
 	// No retained toolResult is orphaned: every toolResult in the kept suffix has its
 	// preceding tool_use turn retained too. The startIndex fallback carries no such guarantee.
-	//@ ensures (forall(j: nat, \result.firstKeptEntryIndex <= j && j < endIndex && entries[j].type === "message" && entries[j].message.role === "toolResult" ==> 0 <= j - 1 && \result.firstKeptEntryIndex <= j - 1 && entries[j - 1].type === "message")) || \result.firstKeptEntryIndex === startIndex
+	//@ ensures (forall(j: nat, \result.firstKeptEntryIndex <= j && j < endIndex && isToolResultMessage(entries[j]) ==> 0 <= j - 1 && \result.firstKeptEntryIndex <= j - 1 && entries[j - 1].type === "message")) || \result.firstKeptEntryIndex === startIndex
 	const cutPoints = findValidCutPoints(entries, startIndex, endIndex);
 
 	if (cutPoints.length === 0) {
@@ -432,7 +439,7 @@ export function findCutPoint(
 	for (let i = endIndex - 1; i >= startIndex; i--) {
 		//@ invariant i < endIndex
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
-		//@ invariant !(entries[cutIndex].type === "message" && entries[cutIndex].message.role === "toolResult")
+		//@ invariant !isToolResultMessage(entries[cutIndex])
 		const entry = entries[i];
 		if (entry.type !== "message") continue;
 
@@ -445,7 +452,7 @@ export function findCutPoint(
 			// Find the closest valid cut point at or after this entry
 			for (let c = 0; c < cutPoints.length; c++) {
 				//@ invariant startIndex <= cutIndex && cutIndex < endIndex
-				//@ invariant !(entries[cutIndex].type === "message" && entries[cutIndex].message.role === "toolResult")
+				//@ invariant !isToolResultMessage(entries[cutIndex])
 				if (cutPoints[c] >= i) {
 					cutIndex = cutPoints[c];
 					break;
@@ -458,7 +465,7 @@ export function findCutPoint(
 	// Scan backwards from cutIndex to include any non-message entries (bash, settings, etc.)
 	while (cutIndex > startIndex) {
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
-		//@ invariant !(entries[cutIndex].type === "message" && entries[cutIndex].message.role === "toolResult")
+		//@ invariant !isToolResultMessage(entries[cutIndex])
 		const prevEntry = entries[cutIndex - 1];
 		// Stop at session header or compaction boundaries
 		if (prevEntry.type === "compaction") {
