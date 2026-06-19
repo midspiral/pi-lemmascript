@@ -301,6 +301,17 @@ function isToolResultMessage(entry: SessionEntry): boolean {
 	return entry.type === "message" && entry.message.role === "toolResult";
 }
 
+// A turn boundary: a user/bashExecution message, or a branch-summary/custom-message entry.
+// biome-ignore lint/correctness/noUnusedVariables: spec-only predicate referenced in //@ contracts
+function isTurnStarter(entry: SessionEntry): boolean {
+	//@ verify
+	return (
+		entry.type === "branch_summary" ||
+		entry.type === "custom_message" ||
+		(entry.type === "message" && (entry.message.role === "user" || entry.message.role === "bashExecution"))
+	);
+}
+
 /**
  * Find valid cut points: indices of user, assistant, custom, or bashExecution messages.
  * Never cut at tool results (they must follow their tool call).
@@ -361,14 +372,13 @@ function findValidCutPoints(entries: SessionEntry[], startIndex: number, endInde
  * Returns -1 if no turn start found before the index.
  * BashExecutionMessage is treated like a user message for turn boundaries.
  */
-// Opaque to the verifier: its turn-starter postcondition is provable in principle
-// (a minimal local-typed repro verifies), but in-place it hits an LS lowering gap —
-// a local var bound from an auto-resolved, cross-package-shadowed string-union field
-// loses its enum type at a `===` comparison (the `switch` form sidesteps it). So the
-// turn-split ensures on findCutPoint is not asserted; the no-orphan guarantee stands.
-//@ extern
+//@ verify
+//@ requires 0 <= startIndex
+//@ requires entryIndex < entries.length
+//@ ensures \result === -1 || (startIndex <= \result && \result <= entryIndex && isTurnStarter(entries[\result]))
 export function findTurnStartIndex(entries: SessionEntry[], entryIndex: number, startIndex: number): number {
 	for (let i = entryIndex; i >= startIndex; i--) {
+		//@ invariant i <= entryIndex
 		const entry = entries[i];
 		// branch_summary and custom_message are user-role messages, can start a turn
 		if (entry.type === "branch_summary" || entry.type === "custom_message") {
@@ -426,6 +436,8 @@ export function findCutPoint(
 	// No retained toolResult is orphaned: every toolResult in the kept suffix has its
 	// preceding tool_use turn retained too. The startIndex fallback carries no such guarantee.
 	//@ ensures (forall(j: nat, \result.firstKeptEntryIndex <= j && j < endIndex && isToolResultMessage(entries[j]) ==> 0 <= j - 1 && \result.firstKeptEntryIndex <= j - 1 && entries[j - 1].type === "message")) || \result.firstKeptEntryIndex === startIndex
+	// A split turn always names a real turn-starter at or before the cut, in range.
+	//@ ensures \result.isSplitTurn ==> (0 <= \result.turnStartIndex && \result.turnStartIndex < entries.length && startIndex <= \result.turnStartIndex && \result.turnStartIndex <= \result.firstKeptEntryIndex && isTurnStarter(entries[\result.turnStartIndex]))
 	const cutPoints = findValidCutPoints(entries, startIndex, endIndex);
 
 	if (cutPoints.length === 0) {

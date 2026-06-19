@@ -4,8 +4,6 @@ datatype Option<T> = None | Some(value: T)
 
 function {:axiom} estimateTokens(message: AgentMessage): int
 
-function {:axiom} findTurnStartIndex(entries: seq<SessionEntry>, entryIndex: int, startIndex: int): int
-
 datatype Role = bashExecution | custom | branchSummary | compactionSummary | user | assistant | toolResult
 
 datatype AgentMessage = AgentMessage(role: Role)
@@ -43,6 +41,11 @@ datatype SessionInfoEntry = SessionInfoEntry(type_: string, name: Option<string>
 function isToolResultMessage(entry: SessionEntry): bool
 {
   (entry.message? && entry.message.role.toolResult?)
+}
+
+function isTurnStarter(entry: SessionEntry): bool
+{
+  ((entry.branch_summary? || entry.custom_message?) || (entry.message? && (entry.message.role.user? || entry.message.role.bashExecution?)))
 }
 
 method findValidCutPoints(entries: seq<SessionEntry>, startIndex: int, endIndex: int) returns (res: seq<int>)
@@ -103,12 +106,40 @@ method findValidCutPoints(entries: seq<SessionEntry>, startIndex: int, endIndex:
   return cutPoints;
 }
 
+method findTurnStartIndex(entries: seq<SessionEntry>, entryIndex: int, startIndex: int) returns (res: int)
+  requires (0 <= startIndex)
+  requires (entryIndex < |entries|)
+  ensures ((res == -1) || (((startIndex <= res) && (res <= entryIndex)) && isTurnStarter(entries[res])))
+{
+  var i := entryIndex;
+  while (i >= startIndex)
+    invariant (i <= entryIndex)
+  {
+    var entry := entries[i];
+    if (entry.branch_summary? || entry.custom_message?) {
+      return i;
+    }
+    match entry {
+      case message(i_entry_message, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+        var role := i_entry_message.role;
+        if (role.user? || role.bashExecution?) {
+          return i;
+        }
+      case _ =>
+
+    }
+    i := (i - 1);
+  }
+  return -1;
+}
+
 method findCutPoint(entries: seq<SessionEntry>, startIndex: int, endIndex: int, keepRecentTokens: int) returns (res: CutPointResult)
   requires (0 <= startIndex)
   requires (endIndex <= |entries|)
   requires forall j: nat :: ((startIndex < j) ==> (j < endIndex) ==> isToolResultMessage(entries[j]) ==> entries[(j - 1)].message?)
   ensures ((((startIndex <= res.firstKeptEntryIndex) && (res.firstKeptEntryIndex < endIndex)) && !(isToolResultMessage(entries[res.firstKeptEntryIndex]))) || (res.firstKeptEntryIndex == startIndex))
   ensures ((forall j: nat :: ((res.firstKeptEntryIndex <= j) ==> (j < endIndex) ==> isToolResultMessage(entries[j]) ==> (((0 <= (j - 1)) && (res.firstKeptEntryIndex <= (j - 1))) && entries[(j - 1)].message?))) || (res.firstKeptEntryIndex == startIndex))
+  ensures (res.isSplitTurn ==> (((((0 <= res.turnStartIndex) && (res.turnStartIndex < |entries|)) && (startIndex <= res.turnStartIndex)) && (res.turnStartIndex <= res.firstKeptEntryIndex)) && isTurnStarter(entries[res.turnStartIndex])))
 {
   var i_t0 := findValidCutPoints(entries, startIndex, endIndex);
   var cutPoints := i_t0;
@@ -166,6 +197,7 @@ method findCutPoint(entries: seq<SessionEntry>, startIndex: int, endIndex: int, 
   }
   var cutEntry := entries[cutIndex];
   var isUserMessage := (cutEntry.message? && cutEntry.message.role.user?);
-  var turnStartIndex := (if isUserMessage then -1 else findTurnStartIndex(entries, cutIndex, startIndex));
+  var i_t1 := findTurnStartIndex(entries, cutIndex, startIndex);
+  var turnStartIndex := (if isUserMessage then -1 else i_t1);
   return CutPointResult(cutIndex, turnStartIndex, (!(isUserMessage) && (turnStartIndex != -1)));
 }

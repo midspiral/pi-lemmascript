@@ -6,7 +6,7 @@ Fork of **pi** (the [earendil-works](https://pi.dev) agent harness) applying [Le
 
 When the context window fills, pi compacts history: it picks a cut point and discards everything before it. A provider API rejects a message list whose retained prefix contains an **orphaned `toolResult`** — a tool result with no preceding tool call still in context. So the cut must never land such that the kept suffix *starts with* an orphaned tool result, and never *splits a tool-use/tool-result run*. We prove exactly those properties, in place, for both functions of the selector in [`packages/agent/src/harness/compaction/compaction.ts`](packages/agent/src/harness/compaction/compaction.ts), and in the shipped CLI's own copy [`packages/coding-agent/src/core/compaction/compaction.ts`](packages/coding-agent/src/core/compaction/compaction.ts).
 
-`check.sh dafny` → **4 verified, 0 errors** each. The case study drove five LemmaScript additions — string-union `declare-type`, faithful JS-`switch` lowering, an opaque fall-through type for unions that can't be discriminated, per-constructor destructor renaming for field-name collisions, and `//@ extern` signature normalization — see [Notes for LemmaScript](#notes-for-lemmascript).
+`check.sh dafny` → **0 errors** — the runtime-library file proves the two no-orphan properties below; the shipped CLI copy additionally proves a *turn-split* property (when the cut splits a turn, the reported turn start is a real turn boundary at or before the cut). The case study drove six LemmaScript additions — string-union `declare-type`, faithful JS-`switch` lowering, an opaque fall-through type for unions that can't be discriminated, per-constructor destructor renaming for field-name collisions, `//@ extern` signature normalization, and string-union typing for local bindings — see [Notes for LemmaScript](#notes-for-lemmascript).
 
 ## What's Verified
 
@@ -33,7 +33,7 @@ Both carry an honest fallback caveat: when there are no valid cut points at all,
 These properties hold relative to assumptions made explicit in the annotations — nothing is hidden behind the proof:
 
 - **Type shadows.** The unreachable `@earendil-works/pi-ai` message graph is shadowed down to what the selector reads: `//@ declare-type Role = "user" | "assistant" | "toolResult" | …` and `//@ declare-type AgentMessage { role: Role }`. `SessionTreeEntry` itself auto-resolves; its `custom_message.content` (an unmodelable union) becomes an opaque type, present but uninspectable.
-- **Opaque helpers.** `estimateTokens` and `findTurnStartIndex` are `//@ extern` — uninterpreted. `estimateTokens` reads message fields outside the shadow, so it *must* be opaque; the safety proofs don't depend on its value, only on which entries are messages.
+- **Opaque helpers.** `estimateTokens` is `//@ extern` — uninterpreted. It reads message fields outside the shadow, so it *must* be opaque; the safety proofs don't depend on its value, only on which entries are messages. (`findTurnStartIndex` is `//@ extern` in the runtime-library file, but verified in the CLI copy, where it underwrites the turn-split property.)
 - **Valid-input `requires`.** `0 <= startIndex`, `endIndex <= entries.length`, and — for the no-orphan result — an explicit ordering precondition: *within the range, a `toolResult` is always immediately preceded by a message (its tool-use turn).* This is the assumption verification forced into the open; if pi's session tree can ever violate it, the no-orphan guarantee is where that would surface.
 
 ## Not (yet) verified
@@ -42,10 +42,11 @@ An **approximate-budget bound** (the kept suffix is close to `keepRecentTokens`)
 
 ## Notes for LemmaScript
 
-This case study drove five additions to the LemmaScript toolchain (all upstream):
+This case study drove six additions to the LemmaScript toolchain (all upstream):
 
 - **String-union `declare-type`.** `//@ declare-type Role = "a" | "b"` now lowers to an enum `datatype`, so a shadow can introduce a discriminant enum for a type that's unreachable across an import.
 - **Faithful JS-`switch` lowering.** C-style fall-through (stacked `case` labels sharing one body) and `break`-as-switch-exit (a `break` nested in a `{ }` case block) now lower correctly to a Dafny `match` — neither of which `match` has natively.
 - **Opaque fall-through type.** A union LemmaScript can't model as a tagged union (no runtime test maps to a tag — e.g. an array element union of unreachable imports) becomes a single opaque `type Opaque_…(==)` rather than invalid raw-union Dafny. Sound by construction: the field is preserved (so distinct values stay distinct — unlike dropping it), and an opaque type has no constructor or tag predicate, so any attempt to *build or test* it fails to lower. Examples: [`opaqueUnion.ts`](https://github.com/midspiral/LemmaScript/blob/main/examples/opaqueUnion.ts).
 - **Shared-destructor collision.** Discriminated-union variants that share a field *name* with different types (`label.targetId: string` vs `leaf.targetId: string?`) get per-constructor-unique destructors, satisfying Dafny's rule that a shared destructor has one type. Safe because variant reads lower to positional match bindings. Example: [`sharedDestructorCollision.ts`](https://github.com/midspiral/LemmaScript/blob/main/examples/sharedDestructorCollision.ts).
 - **`//@ extern` signature normalization.** Extern signatures now resolve their parameter and return types through the normal type machinery, so a parameter typed by an unreachable import becomes `AgentMessage`, not `import("/abs/path").AgentMessage`.
+- **String-union typing for local bindings.** A `const` bound from a field that ts-morph widened to `string` (a string-union role reached across a shadowed import) keeps the string-union datatype LemmaScript resolved for the initializer — so `local === "lit"` lowers to the discriminant test, like the direct field-access form, rather than an ill-typed `string` compare. This is what lets `findTurnStartIndex` verify, underwriting the turn-split property.
