@@ -25,6 +25,9 @@ import {
 	serializeConversation,
 } from "./utils.ts";
 
+//@ declare-type Role = "bashExecution" | "custom" | "branchSummary" | "compactionSummary" | "user" | "assistant" | "toolResult"
+//@ declare-type AgentMessage { role: Role }
+
 // ============================================================================
 // File Operation Tracking
 // ============================================================================
@@ -248,6 +251,7 @@ function estimateTextAndImageContentChars(content: string | Array<{ type: string
  * Estimate token count for a message using chars/4 heuristic.
  * This is conservative (overestimates tokens).
  */
+//@ extern
 export function estimateTokens(message: AgentMessage): number {
 	let chars = 0;
 
@@ -297,9 +301,17 @@ export function estimateTokens(message: AgentMessage): number {
  * and will be kept.
  * BashExecutionMessage is treated like a user message (user-initiated context).
  */
+//@ verify
+//@ requires 0 <= startIndex
+//@ requires endIndex <= entries.length
+//@ ensures forall(k: nat, k < \result.length ==> startIndex <= \result[k] && \result[k] < endIndex)
+//@ ensures forall(k: nat, k < \result.length ==> !(entries[\result[k]].type === "message" && entries[\result[k]].message.role === "toolResult"))
 function findValidCutPoints(entries: SessionEntry[], startIndex: number, endIndex: number): number[] {
 	const cutPoints: number[] = [];
 	for (let i = startIndex; i < endIndex; i++) {
+		//@ invariant startIndex <= i
+		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
+		//@ invariant forall(k: nat, k < cutPoints.length ==> !(entries[cutPoints[k]].type === "message" && entries[cutPoints[k]].message.role === "toolResult"))
 		const entry = entries[i];
 		switch (entry.type) {
 			case "message": {
@@ -342,6 +354,12 @@ function findValidCutPoints(entries: SessionEntry[], startIndex: number, endInde
  * Returns -1 if no turn start found before the index.
  * BashExecutionMessage is treated like a user message for turn boundaries.
  */
+// Opaque to the verifier: its turn-starter postcondition is provable in principle
+// (a minimal local-typed repro verifies), but in-place it hits an LS lowering gap —
+// a local var bound from an auto-resolved, cross-package-shadowed string-union field
+// loses its enum type at a `===` comparison (the `switch` form sidesteps it). So the
+// turn-split ensures on findCutPoint is not asserted; the no-orphan guarantee stands.
+//@ extern
 export function findTurnStartIndex(entries: SessionEntry[], entryIndex: number, startIndex: number): number {
 	for (let i = entryIndex; i >= startIndex; i--) {
 		const entry = entries[i];
@@ -390,6 +408,17 @@ export function findCutPoint(
 	endIndex: number,
 	keepRecentTokens: number,
 ): CutPointResult {
+	//@ verify
+	//@ requires 0 <= startIndex
+	//@ requires endIndex <= entries.length
+	// Ordering assumption verification forces explicit: within the active range, a
+	// toolResult is always immediately preceded by a message (its tool_use turn) —
+	// toolResults never float free after a metadata entry or at the range start.
+	//@ requires forall(j: nat, startIndex < j && j < endIndex && entries[j].type === "message" && entries[j].message.role === "toolResult" ==> entries[j - 1].type === "message")
+	//@ ensures (startIndex <= \result.firstKeptEntryIndex && \result.firstKeptEntryIndex < endIndex && !(entries[\result.firstKeptEntryIndex].type === "message" && entries[\result.firstKeptEntryIndex].message.role === "toolResult")) || \result.firstKeptEntryIndex === startIndex
+	// No retained toolResult is orphaned: every toolResult in the kept suffix has its
+	// preceding tool_use turn retained too. The startIndex fallback carries no such guarantee.
+	//@ ensures (forall(j: nat, \result.firstKeptEntryIndex <= j && j < endIndex && entries[j].type === "message" && entries[j].message.role === "toolResult" ==> 0 <= j - 1 && \result.firstKeptEntryIndex <= j - 1 && entries[j - 1].type === "message")) || \result.firstKeptEntryIndex === startIndex
 	const cutPoints = findValidCutPoints(entries, startIndex, endIndex);
 
 	if (cutPoints.length === 0) {
@@ -401,6 +430,9 @@ export function findCutPoint(
 	let cutIndex = cutPoints[0]; // Default: keep from first message (not header)
 
 	for (let i = endIndex - 1; i >= startIndex; i--) {
+		//@ invariant i < endIndex
+		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
+		//@ invariant !(entries[cutIndex].type === "message" && entries[cutIndex].message.role === "toolResult")
 		const entry = entries[i];
 		if (entry.type !== "message") continue;
 
@@ -412,6 +444,8 @@ export function findCutPoint(
 		if (accumulatedTokens >= keepRecentTokens) {
 			// Find the closest valid cut point at or after this entry
 			for (let c = 0; c < cutPoints.length; c++) {
+				//@ invariant startIndex <= cutIndex && cutIndex < endIndex
+				//@ invariant !(entries[cutIndex].type === "message" && entries[cutIndex].message.role === "toolResult")
 				if (cutPoints[c] >= i) {
 					cutIndex = cutPoints[c];
 					break;
@@ -423,6 +457,8 @@ export function findCutPoint(
 
 	// Scan backwards from cutIndex to include any non-message entries (bash, settings, etc.)
 	while (cutIndex > startIndex) {
+		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
+		//@ invariant !(entries[cutIndex].type === "message" && entries[cutIndex].message.role === "toolResult")
 		const prevEntry = entries[cutIndex - 1];
 		// Stop at session header or compaction boundaries
 		if (prevEntry.type === "compaction") {
