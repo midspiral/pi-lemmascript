@@ -1031,6 +1031,57 @@ describe("edit tool fuzzy matching", () => {
 
 		expect(readFileSync(testFile, "utf-8")).toBe("console.log('world');\nhello universe\n");
 	});
+
+	it("should preserve the correct occurrence when fuzzy replacement equals a nearby line", async () => {
+		const testFile = join(testDir, "fuzzy-preserve-duplicate-line.txt");
+		const originalContent = ["replace me\u0020\u0020\u0020", "after\u0020\u0020\u0020", ""].join("\n");
+		writeFileSync(testFile, originalContent);
+
+		const result = await editTool.execute("test-fuzzy-preserve-duplicate-line", {
+			path: testFile,
+			edits: [{ oldText: "replace me\n", newText: "after\n" }],
+		});
+
+		const expectedContent = ["after", "after\u0020\u0020\u0020", ""].join("\n");
+		expect(readFileSync(testFile, "utf-8")).toBe(expectedContent);
+		expect(applyPatch(originalContent, result.details?.patch ?? "")).toBe(expectedContent);
+	});
+
+	it("should preserve untouched lines and produce an applicable patch for fuzzy multi-edits", async () => {
+		const testFile = join(testDir, "fuzzy-preserve-multi.txt");
+		const originalContent = [
+			"keep before\u0020\u0020",
+			"first target\u0020\u0020",
+			"first after",
+			"keep middle\u0020\u0020\u0020",
+			"second target\u0020\u0020",
+			"second after",
+			"keep after\u0020\u0020",
+			"",
+		].join("\n");
+		writeFileSync(testFile, originalContent);
+
+		const result = await editTool.execute("test-fuzzy-preserve-multi", {
+			path: testFile,
+			edits: [
+				{ oldText: "first target\nfirst after", newText: "FIRST\nFIRST2" },
+				{ oldText: "second target\nsecond after", newText: "SECOND\nSECOND2" },
+			],
+		});
+
+		const expectedContent = [
+			"keep before\u0020\u0020",
+			"FIRST",
+			"FIRST2",
+			"keep middle\u0020\u0020\u0020",
+			"SECOND",
+			"SECOND2",
+			"keep after\u0020\u0020",
+			"",
+		].join("\n");
+		expect(readFileSync(testFile, "utf-8")).toBe(expectedContent);
+		expect(applyPatch(originalContent, result.details?.patch ?? "")).toBe(expectedContent);
+	});
 });
 
 describe("edit tool CRLF handling", () => {

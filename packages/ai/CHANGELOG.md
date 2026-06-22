@@ -2,8 +2,16 @@
 
 ## [Unreleased]
 
+## [0.79.9] - 2026-06-20
+
+### Added
+
+- Added configurable `chat-template` thinking support for OpenAI-compatible providers that use `chat_template_kwargs`, such as DeepSeek models behind vLLM ([#5673](https://github.com/earendil-works/pi/issues/5673)).
+
 ### Fixed
 
+- Fixed Fireworks GLM-5.2 metadata to use the OpenAI-compatible Chat Completions endpoint with `reasoning_effort` support ([#5923](https://github.com/earendil-works/pi/issues/5923)).
+- Fixed OpenRouter GLM-5.2 metadata to expose `xhigh` reasoning and send OpenRouter's native `xhigh` effort ([#5770](https://github.com/earendil-works/pi/issues/5770)).
 - Fixed GitHub Copilot OAuth model availability to use the authenticated account's model picker catalog ([#5897](https://github.com/earendil-works/pi/issues/5897)).
 
 ## [0.79.8] - 2026-06-19

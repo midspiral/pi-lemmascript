@@ -4,6 +4,29 @@
 
 ### Fixed
 
+- Fixed transient extension UI and session-start messages emitted during session replacement or reload so they remain visible, and kept reload input blocked until reload completes ([#5943](https://github.com/earendil-works/pi/issues/5943)).
+- Fixed the plan-mode example to preserve active custom tools, skip the action prompt when no plan is found, and queue refinement/execution follow-ups correctly from `agent_end` ([#5940](https://github.com/earendil-works/pi/issues/5940)).
+- Fixed `pi update` to install the exact version returned by the Pi update check, make `--force` reinstall that checked version, fail instead of falling back to an unversioned reinstall when no version is available, and report both the old and updated versions.
+
+## [0.79.9] - 2026-06-20
+
+### New Features
+
+- **Chat-template thinking compatibility** - OpenAI-compatible custom providers can map Pi thinking levels into `chat_template_kwargs`, enabling vLLM/Hugging Face chat-template models such as DeepSeek to use provider-native thinking controls. See [Custom Provider API Types](docs/custom-provider.md#api-types) and [OpenAI Compatibility](docs/models.md#openai-compatibility).
+- **GLM-5.2 provider improvements** - GLM-5.2 now has corrected Fireworks OpenAI-compatible routing and OpenRouter `xhigh` thinking support, improving `/model` behavior and high-effort reasoning for GLM-5.2 users. See [Model Options](docs/usage.md#model-options).
+
+### Added
+
+- Added inherited configurable `chat-template` thinking support for OpenAI-compatible providers that use `chat_template_kwargs`, such as DeepSeek models behind vLLM ([#5673](https://github.com/earendil-works/pi/issues/5673)).
+
+### Fixed
+
+- Fixed inherited Fireworks GLM-5.2 metadata to use the OpenAI-compatible Chat Completions endpoint with `reasoning_effort` support ([#5923](https://github.com/earendil-works/pi/issues/5923)).
+- Fixed same-directory session switches to reuse imported extension modules while preserving fresh extension instances and lifecycle events ([#5905](https://github.com/earendil-works/pi/issues/5905)).
+- Fixed deep session branches taking quadratic time to build context or branch paths ([#5909](https://github.com/earendil-works/pi/issues/5909)).
+- Fixed inherited OpenRouter GLM-5.2 metadata to expose `xhigh` reasoning and send OpenRouter's native `xhigh` effort ([#5770](https://github.com/earendil-works/pi/issues/5770)).
+- Fixed inherited Markdown streaming code fence rendering so partial closing fences no longer make code blocks shrink or flicker while content streams ([#5846](https://github.com/earendil-works/pi/pull/5846) by [@xl0](https://github.com/xl0)).
+- Fixed fuzzy `edit` matches to preserve untouched line blocks instead of rewriting the whole file through normalized content ([#5899](https://github.com/earendil-works/pi/issues/5899)).
 - Fixed bash commands through legacy WSL `bash.exe` to pass scripts over stdin so shell variables expand in the target bash ([#5893](https://github.com/earendil-works/pi/issues/5893)).
 - Fixed `/model` to hide GitHub Copilot models that are unavailable to the authenticated account ([#5897](https://github.com/earendil-works/pi/issues/5897)).
 - Fixed `/model` selector search to rank exact provider-prefixed matches before proxy-provider model ID matches ([#5892](https://github.com/earendil-works/pi/issues/5892)).

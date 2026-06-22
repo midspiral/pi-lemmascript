@@ -395,7 +395,7 @@ export class InteractiveMode {
 			this.resetExtensionUI();
 		});
 		this.runtimeHost.setRebindSession(async () => {
-			await this.rebindCurrentSession();
+			await this.rebindCurrentSession({ renderBeforeBind: true });
 		});
 		this.version = VERSION;
 		this.ui = new TUI(new ProcessTerminal(), this.settingsManager.getShowHardwareCursor());
@@ -1543,12 +1543,7 @@ export class InteractiveMode {
 					}
 					this.statusContainer.clear();
 					try {
-						const result = await this.runtimeHost.newSession(options);
-						if (!result.cancelled) {
-							this.renderCurrentSessionState();
-							this.ui.requestRender();
-						}
-						return result;
+						return await this.runtimeHost.newSession(options);
 					} catch (error: unknown) {
 						return this.handleFatalRuntimeError("Failed to create session", error);
 					}
@@ -1557,7 +1552,6 @@ export class InteractiveMode {
 					try {
 						const result = await this.runtimeHost.fork(entryId, options);
 						if (!result.cancelled) {
-							this.renderCurrentSessionState();
 							this.editor.setText(result.selectedText ?? "");
 							this.showStatus("Forked to new session");
 						}
@@ -1631,12 +1625,18 @@ export class InteractiveMode {
 		}
 	}
 
-	private async rebindCurrentSession(): Promise<void> {
+	private async rebindCurrentSession(options: { renderBeforeBind?: boolean } = {}): Promise<void> {
 		this.unsubscribe?.();
 		this.unsubscribe = undefined;
 		this.applyRuntimeSettings();
-		await this.bindCurrentSessionExtensions();
-		this.subscribeToAgent();
+		if (options.renderBeforeBind) {
+			this.renderCurrentSessionState();
+			this.subscribeToAgent();
+			await this.bindCurrentSessionExtensions();
+		} else {
+			await this.bindCurrentSessionExtensions();
+			this.subscribeToAgent();
+		}
 		await this.updateAvailableProviderCount();
 		this.updateEditorBorderColor();
 		this.updateTerminalTitle();
@@ -3714,7 +3714,7 @@ export class InteractiveMode {
 		const updateInstruction = theme.fg("muted", `New version ${release.version} is available. Run `) + action;
 		const changelogUrl = "https://pi.dev/changelog";
 		const changelogLink = getCapabilities().hyperlinks
-			? hyperlink(theme.fg("accent", "open changelog"), changelogUrl)
+			? hyperlink(theme.fg("accent", changelogUrl), changelogUrl)
 			: theme.fg("accent", changelogUrl);
 		const changelogLine = theme.fg("muted", "Changelog: ") + changelogLink;
 		const note = release.note?.trim();
@@ -4376,7 +4376,6 @@ export class InteractiveMode {
 							return;
 						}
 
-						this.renderCurrentSessionState();
 						this.editor.setText(result.selectedText ?? "");
 						done();
 						this.showStatus("Forked to new session");
@@ -4409,7 +4408,6 @@ export class InteractiveMode {
 				return;
 			}
 
-			this.renderCurrentSessionState();
 			this.editor.setText("");
 			this.showStatus("Cloned to new session");
 		} catch (error: unknown) {
@@ -4601,7 +4599,6 @@ export class InteractiveMode {
 			if (result.cancelled) {
 				return result;
 			}
-			this.renderCurrentSessionState();
 			this.showStatus("Resumed session");
 			return result;
 		} catch (error: unknown) {
@@ -4619,7 +4616,6 @@ export class InteractiveMode {
 				if (result.cancelled) {
 					return result;
 				}
-				this.renderCurrentSessionState();
 				this.showStatus("Resumed session in current cwd");
 				return result;
 			}
@@ -5072,8 +5068,20 @@ export class InteractiveMode {
 			this.ui.requestRender();
 		};
 
+		let chatRestoredBeforeSessionStart = false;
+		let reloadBoxDismissed = false;
+		const restoreChatBeforeSessionStart = () => {
+			if (chatRestoredBeforeSessionStart) {
+				return;
+			}
+			this.hideThinkingBlock = this.settingsManager.getHideThinkingBlock();
+			this.rebuildChatFromMessages();
+			chatRestoredBeforeSessionStart = true;
+		};
+
 		try {
-			await this.session.reload();
+			await this.session.reload({ beforeSessionStart: restoreChatBeforeSessionStart });
+			restoreChatBeforeSessionStart();
 			configureHttpDispatcher(this.settingsManager.getHttpIdleTimeoutMs());
 			this.keybindings.reload();
 			const activeHeader = this.customHeader ?? this.builtInHeader;
@@ -5081,7 +5089,6 @@ export class InteractiveMode {
 				activeHeader.setExpanded(this.toolOutputExpanded);
 			}
 			setRegisteredThemes(this.session.resourceLoader.getThemes().themes);
-			this.hideThinkingBlock = this.settingsManager.getHideThinkingBlock();
 			await this.themeController.applyFromSettings();
 			const editorPaddingX = this.settingsManager.getEditorPaddingX();
 			const autocompleteMaxVisible = this.settingsManager.getAutocompleteMaxVisible();
@@ -5096,8 +5103,6 @@ export class InteractiveMode {
 			this.setupAutocompleteProvider();
 			const runner = this.session.extensionRunner;
 			this.setupExtensionShortcuts(runner);
-			this.rebuildChatFromMessages();
-			dismissReloadBox(this.editor as Component);
 			this.showLoadedResources({
 				force: false,
 				showDiagnosticsWhenQuiet: true,
@@ -5112,8 +5117,12 @@ export class InteractiveMode {
 					? "Reloaded keybindings, extensions, skills, prompts, themes; saved project trust"
 					: "Reloaded keybindings, extensions, skills, prompts, themes",
 			);
+			dismissReloadBox(this.editor as Component);
+			reloadBoxDismissed = true;
 		} catch (error) {
-			dismissReloadBox(previousEditor as Component);
+			if (!reloadBoxDismissed) {
+				dismissReloadBox(previousEditor as Component);
+			}
 			this.showError(`Reload failed: ${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
@@ -5187,7 +5196,6 @@ export class InteractiveMode {
 				this.showStatus("Import cancelled");
 				return;
 			}
-			this.renderCurrentSessionState();
 			this.showStatus(`Session imported from: ${inputPath}`);
 		} catch (error: unknown) {
 			if (error instanceof MissingSessionCwdError) {
@@ -5201,7 +5209,6 @@ export class InteractiveMode {
 					this.showStatus("Import cancelled");
 					return;
 				}
-				this.renderCurrentSessionState();
 				this.showStatus(`Session imported from: ${inputPath}`);
 				return;
 			}
@@ -5540,7 +5547,6 @@ export class InteractiveMode {
 			if (result.cancelled) {
 				return;
 			}
-			this.renderCurrentSessionState();
 			this.chatContainer.addChild(new Spacer(1));
 			this.chatContainer.addChild(new Text(`${theme.fg("accent", "✓ New session started")}`, 1, 1));
 			this.ui.requestRender();
