@@ -5,9 +5,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	getOpenAICodexWebSocketDebugStats,
 	resetOpenAICodexWebSocketDebugStats,
-	streamOpenAICodexResponses,
-	streamSimpleOpenAICodexResponses,
-} from "../src/providers/openai-codex-responses.ts";
+	stream as streamOpenAICodexResponses,
+	streamSimple as streamSimpleOpenAICodexResponses,
+} from "../src/api/openai-codex-responses.ts";
 import type { Context, Model } from "../src/types.ts";
 
 const originalAgentDir = process.env.PI_CODING_AGENT_DIR;

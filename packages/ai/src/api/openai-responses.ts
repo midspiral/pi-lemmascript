@@ -1,6 +1,5 @@
 import OpenAI from "openai";
 import type { ResponseCreateParamsStreaming } from "openai/resources/responses/responses.js";
-import { registerApiProvider } from "../api-registry.ts";
 import { clampThinkingLevel } from "../models.ts";
 import type {
 	Api,
@@ -81,7 +80,7 @@ export interface OpenAIResponsesOptions extends StreamOptions {
 /**
  * Generate function for OpenAI Responses API
  */
-export const streamOpenAIResponses: StreamFunction<"openai-responses", OpenAIResponsesOptions> = (
+export const stream: StreamFunction<"openai-responses", OpenAIResponsesOptions> = (
 	model: Model<"openai-responses">,
 	context: Context,
 	options?: OpenAIResponsesOptions,
@@ -162,7 +161,7 @@ export const streamOpenAIResponses: StreamFunction<"openai-responses", OpenAIRes
 	return stream;
 };
 
-export const streamSimpleOpenAIResponses: StreamFunction<"openai-responses", SimpleStreamOptions> = (
+export const streamSimple: StreamFunction<"openai-responses", SimpleStreamOptions> = (
 	model: Model<"openai-responses">,
 	context: Context,
 	options?: SimpleStreamOptions,
@@ -176,19 +175,11 @@ export const streamSimpleOpenAIResponses: StreamFunction<"openai-responses", Sim
 	const clampedReasoning = options?.reasoning ? clampThinkingLevel(model, options.reasoning) : undefined;
 	const reasoningEffort = clampedReasoning === "off" ? undefined : clampedReasoning;
 
-	return streamOpenAIResponses(model, context, {
+	return stream(model, context, {
 		...base,
 		reasoningEffort,
 	} satisfies OpenAIResponsesOptions);
 };
-
-export function register(): void {
-	registerApiProvider({
-		api: "openai-responses",
-		stream: streamOpenAIResponses,
-		streamSimple: streamSimpleOpenAIResponses,
-	});
-}
 
 function createClient(
 	model: Model<"openai-responses">,

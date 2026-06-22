@@ -1,6 +1,8 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { getModel } from "@earendil-works/pi-ai";
+import { createModels } from "@earendil-works/pi-ai";
+import { getBuiltinModel } from "@earendil-works/pi-ai/providers/all";
+import { openaiProvider } from "@earendil-works/pi-ai/providers/openai";
 import { NodeExecutionEnv } from "../../src/harness/env/nodejs.ts";
 import { InMemorySessionStorage } from "../../src/harness/session/memory-storage.ts";
 import {
@@ -35,11 +37,15 @@ const { promptTemplates: sourcedPromptTemplates } = await loadSourcedPromptTempl
 	(promptTemplate, source) => ({ ...promptTemplate, source }),
 );
 
+const models = createModels();
+models.setProvider(openaiProvider());
+
 const session = new Session(new InMemorySessionStorage());
 const agent = new AgentHarness({
 	env,
 	session,
-	model: getModel("openai", "gpt-5.5"),
+	models,
+	model: getBuiltinModel("openai", "gpt-5.5"),
 	thinkingLevel: "low",
 	systemPrompt: ({ env, resources }) =>
 		[

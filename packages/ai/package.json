@@ -1,58 +1,63 @@
 {
 	"name": "@earendil-works/pi-ai",
-	"version": "0.79.9",
+	"version": "0.79.10",
 	"description": "Unified LLM API with automatic model discovery and provider configuration",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"sideEffects": [
+		"./dist/compat.js",
+		"./dist/images.js",
+		"./dist/providers/images/register-builtins.js"
+	],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js"
 		},
-		"./base": {
-			"types": "./dist/base.d.ts",
-			"import": "./dist/base.js"
+		"./compat": {
+			"types": "./dist/compat.d.ts",
+			"import": "./dist/compat.js"
 		},
-		"./amazon-bedrock": {
-			"types": "./dist/providers/amazon-bedrock.d.ts",
-			"import": "./dist/providers/amazon-bedrock.js"
+		"./providers/*": {
+			"types": "./dist/providers/*.d.ts",
+			"import": "./dist/providers/*.js"
+		},
+		"./api/*": {
+			"types": "./dist/api/*.d.ts",
+			"import": "./dist/api/*.js"
 		},
 		"./anthropic": {
-			"types": "./dist/providers/anthropic.d.ts",
-			"import": "./dist/providers/anthropic.js"
+			"types": "./dist/api/anthropic-messages.d.ts",
+			"import": "./dist/api/anthropic-messages.js"
 		},
 		"./azure-openai-responses": {
-			"types": "./dist/providers/azure-openai-responses.d.ts",
-			"import": "./dist/providers/azure-openai-responses.js"
+			"types": "./dist/api/azure-openai-responses.d.ts",
+			"import": "./dist/api/azure-openai-responses.js"
 		},
 		"./google": {
-			"types": "./dist/providers/google.d.ts",
-			"import": "./dist/providers/google.js"
+			"types": "./dist/api/google-generative-ai.d.ts",
+			"import": "./dist/api/google-generative-ai.js"
 		},
 		"./google-vertex": {
-			"types": "./dist/providers/google-vertex.d.ts",
-			"import": "./dist/providers/google-vertex.js"
+			"types": "./dist/api/google-vertex.d.ts",
+			"import": "./dist/api/google-vertex.js"
 		},
 		"./mistral": {
-			"types": "./dist/providers/mistral.d.ts",
-			"import": "./dist/providers/mistral.js"
+			"types": "./dist/api/mistral-conversations.d.ts",
+			"import": "./dist/api/mistral-conversations.js"
 		},
 		"./openai-codex-responses": {
-			"types": "./dist/providers/openai-codex-responses.d.ts",
-			"import": "./dist/providers/openai-codex-responses.js"
+			"types": "./dist/api/openai-codex-responses.d.ts",
+			"import": "./dist/api/openai-codex-responses.js"
 		},
 		"./openai-completions": {
-			"types": "./dist/providers/openai-completions.d.ts",
-			"import": "./dist/providers/openai-completions.js"
+			"types": "./dist/api/openai-completions.d.ts",
+			"import": "./dist/api/openai-completions.js"
 		},
 		"./openai-responses": {
-			"types": "./dist/providers/openai-responses.d.ts",
-			"import": "./dist/providers/openai-responses.js"
-		},
-		"./openrouter-images": {
-			"types": "./dist/providers/images/openrouter.d.ts",
-			"import": "./dist/providers/images/openrouter.js"
+			"types": "./dist/api/openai-responses.d.ts",
+			"import": "./dist/api/openai-responses.js"
 		},
 		"./oauth": {
 			"types": "./dist/oauth.d.ts",

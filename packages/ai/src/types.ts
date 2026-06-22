@@ -1,3 +1,12 @@
+import type { AnthropicOptions } from "./api/anthropic-messages.ts";
+import type { AzureOpenAIResponsesOptions } from "./api/azure-openai-responses.ts";
+import type { BedrockOptions } from "./api/bedrock-converse-stream.ts";
+import type { GoogleOptions } from "./api/google-generative-ai.ts";
+import type { GoogleVertexOptions } from "./api/google-vertex.ts";
+import type { MistralOptions } from "./api/mistral-conversations.ts";
+import type { OpenAICodexResponsesOptions } from "./api/openai-codex-responses.ts";
+import type { OpenAICompletionsOptions } from "./api/openai-completions.ts";
+import type { OpenAIResponsesOptions } from "./api/openai-responses.ts";
 import type { AssistantMessageDiagnostic } from "./utils/diagnostics.ts";
 import type { AssistantMessageEventStream } from "./utils/event-stream.ts";
 
@@ -56,11 +65,11 @@ export type KnownProvider =
 	| "xiaomi-token-plan-cn"
 	| "xiaomi-token-plan-ams"
 	| "xiaomi-token-plan-sgp";
-export type Provider = KnownProvider | string;
+export type ProviderId = KnownProvider | string;
 
 export type KnownImagesProvider = "openrouter";
 
-export type ImagesProvider = KnownImagesProvider | string;
+export type ImagesProviderId = KnownImagesProvider | string;
 
 export type ThinkingLevel = "minimal" | "low" | "medium" | "high" | "xhigh";
 export type ModelThinkingLevel = "off" | ThinkingLevel;
@@ -174,6 +183,58 @@ export interface StreamOptions {
 }
 
 export type ProviderStreamOptions = StreamOptions & Record<string, unknown>;
+
+/**
+ * Maps known APIs to their full provider-specific stream option types.
+ * Type-only imports from API implementation modules are erased at emit, so
+ * this is tree-shake safe.
+ */
+export interface ApiOptionsMap {
+	"anthropic-messages": AnthropicOptions;
+	"openai-completions": OpenAICompletionsOptions;
+	"openai-responses": OpenAIResponsesOptions;
+	"openai-codex-responses": OpenAICodexResponsesOptions;
+	"azure-openai-responses": AzureOpenAIResponsesOptions;
+	"google-generative-ai": GoogleOptions;
+	"google-vertex": GoogleVertexOptions;
+	"mistral-conversations": MistralOptions;
+	"bedrock-converse-stream": BedrockOptions;
+}
+
+/**
+ * Full stream options for an API. Known APIs resolve to their concrete option
+ * type; custom API strings fall back to the generic shape.
+ */
+export type ApiStreamOptions<TApi extends Api> = TApi extends keyof ApiOptionsMap
+	? ApiOptionsMap[TApi]
+	: StreamOptions & Record<string, unknown>;
+
+/**
+ * The uniform stream contract of an API implementation module: every module
+ * under `src/api/` exports exactly `stream` and `streamSimple`, so the module
+ * itself satisfies this interface. Lazy wrappers (`lazyApi()`) and provider
+ * factories pass these around as values. This is the untyped dispatch shape;
+ * per-API option typing lives on the implementation modules themselves and on
+ * `Provider.stream()` via `ApiStreamOptions`.
+ */
+export interface ProviderStreams {
+	stream(model: Model<Api>, context: Context, options?: StreamOptions): AssistantMessageEventStream;
+	streamSimple(model: Model<Api>, context: Context, options?: SimpleStreamOptions): AssistantMessageEventStream;
+}
+
+/**
+ * The uniform contract of an image-generation API implementation module:
+ * every image API module under `src/api/` exports exactly `generateImages`,
+ * so the module itself satisfies this interface. Lazy wrappers and image
+ * provider factories pass these around as values.
+ */
+export interface ProviderImages {
+	generateImages(
+		model: ImagesModel<ImagesApi>,
+		context: ImagesContext,
+		options?: ImagesOptions,
+	): Promise<AssistantImages>;
+}
 
 export interface ImagesOptions {
 	signal?: AbortSignal;
@@ -309,7 +370,7 @@ export interface AssistantMessage {
 	role: "assistant";
 	content: (TextContent | ThinkingContent | ToolCall)[];
 	api: Api;
-	provider: Provider;
+	provider: ProviderId;
 	model: string;
 	responseModel?: string; // Concrete `chunk.model` when different from the requested `model` (e.g. OpenRouter `auto` -> `anthropic/...`)
 	responseId?: string; // Provider-specific response/message identifier when the upstream API exposes one
@@ -343,7 +404,7 @@ export type ImagesStopReason = "stop" | "error" | "aborted";
 
 export interface AssistantImages {
 	api: ImagesApi;
-	provider: ImagesProvider;
+	provider: ImagesProviderId;
 	model: string;
 	output: ImagesOutputContent[];
 	responseId?: string;
@@ -592,7 +653,7 @@ export interface Model<TApi extends Api> {
 	id: string;
 	name: string;
 	api: TApi;
-	provider: Provider;
+	provider: ProviderId;
 	baseUrl: string;
 	reasoning: boolean;
 	/**
@@ -623,6 +684,6 @@ export interface Model<TApi extends Api> {
 export interface ImagesModel<TApi extends ImagesApi>
 	extends Omit<Model<Api>, "api" | "provider" | "reasoning" | "contextWindow" | "maxTokens" | "compat"> {
 	api: TApi;
-	provider: ImagesProvider;
+	provider: ImagesProviderId;
 	output: ("text" | "image")[];
 }
