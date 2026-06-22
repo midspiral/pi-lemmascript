@@ -170,6 +170,10 @@ export function parseChangelog(changelogPath: string): ChangelogEntry[] {
 /**
  * Compare versions. Returns: -1 if v1 < v2, 0 if v1 === v2, 1 if v1 > v2
  */
+//@ verify
+//@ ensures (\result > 0) <==> (v1.major > v2.major || (v1.major == v2.major && v1.minor > v2.minor) || (v1.major == v2.major && v1.minor == v2.minor && v1.patch > v2.patch))
+//@ ensures (\result < 0) <==> (v1.major < v2.major || (v1.major == v2.major && v1.minor < v2.minor) || (v1.major == v2.major && v1.minor == v2.minor && v1.patch < v2.patch))
+//@ ensures (\result == 0) <==> (v1.major == v2.major && v1.minor == v2.minor && v1.patch == v2.patch)
 export function compareVersions(v1: ChangelogEntry, v2: ChangelogEntry): number {
 	if (v1.major !== v2.major) return v1.major - v2.major;
 	if (v1.minor !== v2.minor) return v1.minor - v2.minor;
