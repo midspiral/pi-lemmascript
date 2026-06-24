@@ -31,6 +31,9 @@ const EXTENDED_THINKING_LEVELS: seq<ModelThinkingLevel> := [ModelThinkingLevel.o
 method clampThinkingLevel<TApi>(model: Model<TApi>, level: ModelThinkingLevel) returns (res: ModelThinkingLevel)
   ensures ((res in getSupportedThinkingLevels(model)) || res.off?)
   ensures ((level in getSupportedThinkingLevels(model)) ==> (res == level))
+  ensures ((res in getSupportedThinkingLevels(model)) ==> (SeqIndexOf(EXTENDED_THINKING_LEVELS, level) <= SeqIndexOf(EXTENDED_THINKING_LEVELS, res)) ==> forall k: int :: ((SeqIndexOf(EXTENDED_THINKING_LEVELS, level) <= k) ==> (k < SeqIndexOf(EXTENDED_THINKING_LEVELS, res)) ==> !((EXTENDED_THINKING_LEVELS[k] in getSupportedThinkingLevels(model)))))
+  ensures ((res in getSupportedThinkingLevels(model)) ==> (SeqIndexOf(EXTENDED_THINKING_LEVELS, res) < SeqIndexOf(EXTENDED_THINKING_LEVELS, level)) ==> forall k: int :: ((SeqIndexOf(EXTENDED_THINKING_LEVELS, level) <= k) ==> (k < |EXTENDED_THINKING_LEVELS|) ==> !((EXTENDED_THINKING_LEVELS[k] in getSupportedThinkingLevels(model)))))
+  ensures ((res in getSupportedThinkingLevels(model)) ==> (SeqIndexOf(EXTENDED_THINKING_LEVELS, res) < SeqIndexOf(EXTENDED_THINKING_LEVELS, level)) ==> forall k: int :: ((SeqIndexOf(EXTENDED_THINKING_LEVELS, res) < k) ==> (k < SeqIndexOf(EXTENDED_THINKING_LEVELS, level)) ==> !((EXTENDED_THINKING_LEVELS[k] in getSupportedThinkingLevels(model)))))
 {
   var availableLevels := getSupportedThinkingLevels(model);
   if (level in availableLevels) {
@@ -42,6 +45,9 @@ method clampThinkingLevel<TApi>(model: Model<TApi>, level: ModelThinkingLevel) r
   }
   var i := requestedIndex;
   while (i < |EXTENDED_THINKING_LEVELS|)
+    invariant (requestedIndex <= i)
+    invariant (i <= |EXTENDED_THINKING_LEVELS|)
+    invariant forall k: int :: ((requestedIndex <= k) ==> (k < i) ==> !((EXTENDED_THINKING_LEVELS[k] in availableLevels)))
   {
     var candidate := EXTENDED_THINKING_LEVELS[i];
     if (candidate in availableLevels) {
@@ -51,6 +57,10 @@ method clampThinkingLevel<TApi>(model: Model<TApi>, level: ModelThinkingLevel) r
   }
   var i_2 := (requestedIndex - 1);
   while (i_2 >= 0)
+    invariant (-1 <= i_2)
+    invariant (i_2 < requestedIndex)
+    invariant forall k: int :: ((i_2 < k) ==> (k < requestedIndex) ==> !((EXTENDED_THINKING_LEVELS[k] in availableLevels)))
+    invariant forall k: int :: ((requestedIndex <= k) ==> (k < |EXTENDED_THINKING_LEVELS|) ==> !((EXTENDED_THINKING_LEVELS[k] in availableLevels)))
   {
     var candidate := EXTENDED_THINKING_LEVELS[i_2];
     if (candidate in availableLevels) {
