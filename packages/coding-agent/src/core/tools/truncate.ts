@@ -44,6 +44,12 @@ export interface TruncationOptions {
 	maxBytes?: number;
 }
 
+//@ extern Buffer.byteLength
+//@ ensures \result >= 0
+declare function __bufferByteLength(s: string, enc: string): number;
+
+//@ extern
+//@ ensures content.length > 0 ==> \result.length > 0
 function splitLinesForCounting(content: string): string[] {
 	if (content.length === 0) {
 		return [];
@@ -75,6 +81,11 @@ export function formatSize(bytes: number): string {
  * Never returns partial lines. If first line exceeds byte limit,
  * returns empty content with firstLineExceedsLimit=true.
  */
+//@ verify
+//@ requires content.length > 0
+//@ ensures \result.maxLines >= 0 ==> \result.outputLines <= \result.maxLines
+//@ ensures \result.outputLines <= \result.totalLines
+//@ ensures (\result.truncatedBy == "bytes" && !\result.firstLineExceedsLimit) ==> \result.outputLines < \result.maxLines
 export function truncateHead(content: string, options: TruncationOptions = {}): TruncationResult {
 	const maxLines = options.maxLines ?? DEFAULT_MAX_LINES;
 	const maxBytes = options.maxBytes ?? DEFAULT_MAX_BYTES;
@@ -124,6 +135,10 @@ export function truncateHead(content: string, options: TruncationOptions = {}): 
 	let truncatedBy: "lines" | "bytes" = "lines";
 
 	for (let i = 0; i < lines.length && i < maxLines; i++) {
+		//@ invariant 0 <= i && i <= lines.length
+		//@ invariant i == 0 || i <= maxLines
+		//@ invariant outputLinesArr.length == i
+		//@ invariant outputBytesCount <= maxBytes
 		const line = lines[i];
 		const lineBytes = Buffer.byteLength(line, "utf-8") + (i > 0 ? 1 : 0); // +1 for newline
 
@@ -165,6 +180,11 @@ export function truncateHead(content: string, options: TruncationOptions = {}): 
  *
  * May return partial first line if the last line of original content exceeds byte limit.
  */
+//@ verify
+//@ requires content.length > 0
+//@ ensures \result.maxLines >= 0 ==> \result.outputLines <= \result.maxLines
+//@ ensures \result.outputLines <= \result.totalLines
+//@ ensures (\result.maxBytes >= 0 && \result.truncatedBy == "bytes" && !\result.lastLinePartial) ==> \result.outputLines < \result.maxLines
 export function truncateTail(content: string, options: TruncationOptions = {}): TruncationResult {
 	const maxLines = options.maxLines ?? DEFAULT_MAX_LINES;
 	const maxBytes = options.maxBytes ?? DEFAULT_MAX_BYTES;
@@ -197,6 +217,10 @@ export function truncateTail(content: string, options: TruncationOptions = {}): 
 	let lastLinePartial = false;
 
 	for (let i = lines.length - 1; i >= 0 && outputLinesArr.length < maxLines; i--) {
+		//@ invariant i >= -1
+		//@ invariant outputLinesArr.length == lines.length - 1 - i
+		//@ invariant outputLinesArr.length == 0 || outputLinesArr.length <= maxLines
+		//@ invariant outputBytesCount <= maxBytes || outputBytesCount == 0
 		const line = lines[i];
 		const lineBytes = Buffer.byteLength(line, "utf-8") + (outputLinesArr.length > 0 ? 1 : 0); // +1 for newline
 
@@ -244,6 +268,7 @@ export function truncateTail(content: string, options: TruncationOptions = {}): 
  * Truncate a string to fit within a byte limit (from the end).
  * Handles multi-byte UTF-8 characters correctly.
  */
+//@ extern
 function truncateStringToBytesFromEnd(str: string, maxBytes: number): string {
 	const buf = Buffer.from(str, "utf-8");
 	if (buf.length <= maxBytes) {
