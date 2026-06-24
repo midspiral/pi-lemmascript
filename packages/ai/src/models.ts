@@ -383,8 +383,11 @@ export function calculateCost<TApi extends Api>(model: Model<TApi>, usage: Usage
 	return usage.cost;
 }
 
+//@ declare-type ModelThinkingLevel = "off" | "minimal" | "low" | "medium" | "high" | "xhigh"
+//@ declare-type Model<TApi> { reasoning: boolean }
 const EXTENDED_THINKING_LEVELS: ModelThinkingLevel[] = ["off", "minimal", "low", "medium", "high", "xhigh"];
 
+//@ extern
 export function getSupportedThinkingLevels<TApi extends Api>(model: Model<TApi>): ModelThinkingLevel[] {
 	if (!model.reasoning) return ["off"];
 
@@ -396,6 +399,9 @@ export function getSupportedThinkingLevels<TApi extends Api>(model: Model<TApi>)
 	});
 }
 
+//@ verify
+//@ ensures getSupportedThinkingLevels(model).includes(\result) || \result == "off"
+//@ ensures getSupportedThinkingLevels(model).includes(level) ==> \result == level
 export function clampThinkingLevel<TApi extends Api>(
 	model: Model<TApi>,
 	level: ModelThinkingLevel,
