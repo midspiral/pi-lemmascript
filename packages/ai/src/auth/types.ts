@@ -1,4 +1,4 @@
-import type { Api, ImagesApi, ImagesModel, Model } from "../types.ts";
+import type { Api, ImagesApi, ImagesModel, Model, ProviderEnv, ProviderHeaders } from "../types.ts";
 import type { OAuthCredentials } from "../utils/oauth/types.ts";
 
 /**
@@ -7,18 +7,18 @@ import type { OAuthCredentials } from "../utils/oauth/types.ts";
  */
 export interface ModelAuth {
 	apiKey?: string;
-	headers?: Record<string, string>;
+	headers?: ProviderHeaders;
 	baseUrl?: string;
 }
 
 /**
- * Stored api-key credential. `metadata` holds non-key values such as
- * Cloudflare account/gateway ids.
+ * Stored api-key credential. `env` holds provider-scoped environment/config
+ * values such as Cloudflare account/gateway ids.
  */
 export interface ApiKeyCredential {
-	type: "api-key";
+	type: "api_key";
 	key?: string;
-	metadata?: Record<string, string>;
+	env?: ProviderEnv;
 }
 
 /** Stored OAuth credential (`access`, `refresh`, `expires` from OAuthCredentials). */
@@ -78,6 +78,8 @@ export interface AuthContext {
 /** Result of resolving auth for a model. */
 export interface AuthResult {
 	auth: ModelAuth;
+	/** Provider-scoped environment/config values resolved from credentials and ambient context. */
+	env?: ProviderEnv;
 	/** Human-readable label for status UI: "ANTHROPIC_API_KEY", "OAuth", "~/.aws/credentials". */
 	source?: string;
 }
@@ -121,19 +123,19 @@ export interface AuthLoginCallbacks {
 }
 
 /**
- * Api-key auth: stored key/metadata plus ambient sources (env vars, AWS
+ * Api-key auth: stored key/provider env plus ambient sources (env vars, AWS
  * profiles, ADC files). Ambient-only providers omit `login`.
  */
 export interface ApiKeyAuth {
 	/** Display name, e.g. "Anthropic API key". */
 	name: string;
 
-	/** Interactive setup (prompt for key/metadata). Absent = ambient-only. */
+	/** Interactive setup (prompt for key/provider env). Absent = ambient-only. */
 	login?(callbacks: AuthLoginCallbacks): Promise<ApiKeyCredential>;
 
 	/**
 	 * Resolve auth from the stored credential and/or ambient sources, merging
-	 * per field (`credential.key ?? env("...")`, `metadata.accountId ?? env("...")`).
+	 * per field (`credential.key ?? env("...")`, `credential.env?.NAME ?? env("...")`).
 	 * undefined = not configured. Receives the chat or image-generation model
 	 * the request is for (both carry `provider` and `baseUrl`).
 	 */

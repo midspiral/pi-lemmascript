@@ -5344,8 +5344,12 @@ export class InteractiveMode {
 		}
 
 		this.session.setSessionName(name);
+		const sessionName = this.sessionManager.getSessionName();
+		if (sessionName !== name) {
+			this.showWarning(`Session name was normalized from ${JSON.stringify(name)} to ${JSON.stringify(sessionName)}`);
+		}
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(theme.fg("dim", `Session name set: ${name}`), 1, 0));
+		this.chatContainer.addChild(new Text(theme.fg("dim", `Session name set: ${sessionName ?? name}`), 1, 0));
 		this.ui.requestRender();
 	}
 

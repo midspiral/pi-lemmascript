@@ -246,9 +246,10 @@ describe("ModelRegistry", () => {
 			expect(model?.baseUrl).toBe("https://openrouter.ai/api/v1");
 		});
 
-		test("non-built-in provider custom models still require baseUrl and apiKey", () => {
+		test("non-built-in provider custom models still require baseUrl", () => {
 			writeRawModelsJson({
 				"my-custom-provider": {
+					apiKey: "test-key",
 					models: [
 						{
 							id: "my-model",

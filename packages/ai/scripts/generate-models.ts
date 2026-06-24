@@ -277,8 +277,147 @@ function isAnthropicTemperatureUnsupportedModel(modelId: string): boolean {
 	return id.includes("opus-4-7") || id.includes("opus-4.7") || id.includes("opus-4-8") || id.includes("opus-4.8");
 }
 
+const OPENAI_COMPLETIONS_DEFAULT_COMPAT = {
+	supportsStore: true,
+	supportsDeveloperRole: true,
+	supportsReasoningEffort: true,
+	supportsUsageInStreaming: true,
+	maxTokensField: "max_completion_tokens",
+	requiresToolResultName: false,
+	requiresAssistantAfterToolResult: false,
+	requiresThinkingAsText: false,
+	requiresReasoningContentOnAssistantMessages: false,
+	thinkingFormat: "openai",
+	openRouterRouting: {},
+	vercelGatewayRouting: {},
+	chatTemplateKwargs: {},
+	zaiToolStream: false,
+	supportsStrictMode: true,
+	sendSessionAffinityHeaders: false,
+	supportsLongCacheRetention: true,
+} satisfies Required<Omit<OpenAICompletionsCompat, "cacheControlFormat">> & {
+	cacheControlFormat?: OpenAICompletionsCompat["cacheControlFormat"];
+};
+
+type OpenAICompletionsResolvedCompat = typeof OPENAI_COMPLETIONS_DEFAULT_COMPAT & {
+	cacheControlFormat?: OpenAICompletionsCompat["cacheControlFormat"];
+};
+
 function mergeAnthropicMessagesCompat(model: Model<Api>, compat: AnthropicMessagesCompat): void {
 	model.compat = { ...(model.compat as AnthropicMessagesCompat | undefined), ...compat };
+}
+
+function detectOpenAICompletionsCompat(model: Model<"openai-completions">): OpenAICompletionsResolvedCompat {
+	const provider = model.provider;
+	const baseUrl = model.baseUrl;
+
+	const isZai =
+		provider === "zai" ||
+		provider === "zai-coding-cn" ||
+		baseUrl.includes("api.z.ai") ||
+		baseUrl.includes("open.bigmodel.cn");
+	const isTogether =
+		provider === "together" || baseUrl.includes("api.together.ai") || baseUrl.includes("api.together.xyz");
+	const isMoonshot = provider === "moonshotai" || provider === "moonshotai-cn" || baseUrl.includes("api.moonshot.");
+	const isOpenRouter = provider === "openrouter" || baseUrl.includes("openrouter.ai");
+	const isCloudflareWorkersAI = provider === "cloudflare-workers-ai" || baseUrl.includes("api.cloudflare.com");
+	const isCloudflareAiGateway = provider === "cloudflare-ai-gateway" || baseUrl.includes("gateway.ai.cloudflare.com");
+	const isNvidia = provider === "nvidia" || baseUrl.includes("integrate.api.nvidia.com");
+	const isAntLing = provider === "ant-ling" || baseUrl.includes("api.ant-ling.com");
+	const isTogetherReasoningOnly = isTogether && TOGETHER_REASONING_ONLY_MODELS.has(model.id);
+
+	const isNonStandard =
+		isNvidia ||
+		provider === "cerebras" ||
+		baseUrl.includes("cerebras.ai") ||
+		provider === "xai" ||
+		baseUrl.includes("api.x.ai") ||
+		isTogether ||
+		baseUrl.includes("chutes.ai") ||
+		baseUrl.includes("deepseek.com") ||
+		isZai ||
+		isMoonshot ||
+		provider === "opencode" ||
+		baseUrl.includes("opencode.ai") ||
+		isCloudflareWorkersAI ||
+		isCloudflareAiGateway ||
+		isAntLing;
+
+	const useMaxTokens =
+		baseUrl.includes("chutes.ai") || isMoonshot || isCloudflareAiGateway || isTogether || isNvidia || isAntLing;
+
+	const isGrok = provider === "xai" || baseUrl.includes("api.x.ai");
+	const isDeepSeek = provider === "deepseek" || baseUrl.includes("deepseek.com");
+	const isOpenRouterDeveloperRoleModel =
+		isOpenRouter && (model.id.startsWith("anthropic/") || model.id.startsWith("openai/"));
+	const cacheControlFormat = provider === "openrouter" && model.id.startsWith("anthropic/") ? "anthropic" : undefined;
+
+	return {
+		supportsStore: !isNonStandard,
+		supportsDeveloperRole: isOpenRouterDeveloperRoleModel || (!isNonStandard && !isOpenRouter),
+		supportsReasoningEffort:
+			!isGrok && !isZai && !isMoonshot && !isTogether && !isCloudflareAiGateway && !isNvidia && !isAntLing,
+		supportsUsageInStreaming: true,
+		maxTokensField: useMaxTokens ? "max_tokens" : "max_completion_tokens",
+		requiresToolResultName: false,
+		requiresAssistantAfterToolResult: false,
+		requiresThinkingAsText: false,
+		requiresReasoningContentOnAssistantMessages: isDeepSeek,
+		thinkingFormat: isDeepSeek
+			? "deepseek"
+			: isZai
+				? "zai"
+				: isTogether && !isTogetherReasoningOnly
+					? "together"
+					: isAntLing
+						? "ant-ling"
+						: isOpenRouter
+							? "openrouter"
+							: "openai",
+		openRouterRouting: {},
+		vercelGatewayRouting: {},
+		chatTemplateKwargs: {},
+		zaiToolStream: false,
+		supportsStrictMode: !isMoonshot && !isTogether && !isCloudflareAiGateway && !isNvidia,
+		...(cacheControlFormat ? { cacheControlFormat } : {}),
+		sendSessionAffinityHeaders: false,
+		supportsLongCacheRetention: !(
+			isTogether ||
+			isCloudflareWorkersAI ||
+			isCloudflareAiGateway ||
+			isNvidia ||
+			isAntLing
+		),
+	};
+}
+
+function isPlainEmptyObject(value: unknown): boolean {
+	return typeof value === "object" && value !== null && !Array.isArray(value) && Object.keys(value).length === 0;
+}
+
+function openAICompletionsCompatDelta(compat: OpenAICompletionsResolvedCompat): OpenAICompletionsCompat {
+	const delta: OpenAICompletionsCompat = {};
+	for (const [key, value] of Object.entries(compat)) {
+		const defaultValue = OPENAI_COMPLETIONS_DEFAULT_COMPAT[key as keyof typeof OPENAI_COMPLETIONS_DEFAULT_COMPAT];
+		if (isPlainEmptyObject(value) && isPlainEmptyObject(defaultValue)) continue;
+		if (value !== defaultValue) {
+			(delta as Record<string, unknown>)[key] = value;
+		}
+	}
+	return delta;
+}
+
+function mergeOpenAICompletionsCompat(model: Model<Api>, compat: OpenAICompletionsCompat): void {
+	model.compat = { ...(model.compat as OpenAICompletionsCompat | undefined), ...compat };
+}
+
+function applyOpenAICompletionsCompatMetadata(model: Model<Api>): void {
+	if (model.api !== "openai-completions") return;
+	const detected = openAICompletionsCompatDelta(detectOpenAICompletionsCompat(model as Model<"openai-completions">));
+	model.compat = { ...detected, ...(model.compat as OpenAICompletionsCompat | undefined) };
+	if (Object.keys(model.compat).length === 0) {
+		delete model.compat;
+	}
 }
 
 function isGemini3ProModel(modelId: string): boolean {
@@ -854,9 +993,10 @@ async function loadModelsDevData(): Promise<Model<any>[]> {
 					continue;
 				}
 
-				// workers-ai/* through the gateway forwards x-session-affinity to
-				// the underlying Workers AI runtime for prefix-cache routing.
-				const compat = upstream === "workers-ai" ? { sendSessionAffinityHeaders: true } : undefined;
+				// Gateway passthroughs forward session affinity headers to upstreams that
+				// use them for cache/routing affinity.
+				const compat =
+					upstream === "anthropic" || upstream === "workers-ai" ? { sendSessionAffinityHeaders: true } : undefined;
 
 				models.push({
 					id,
@@ -2096,6 +2236,7 @@ async function generateModels() {
 
 	for (const model of allModels) {
 		applyThinkingLevelMetadata(model);
+		applyOpenAICompletionsCompatMetadata(model);
 	}
 
 	// Group by provider and deduplicate by model ID

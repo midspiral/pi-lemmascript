@@ -102,6 +102,45 @@ describe("ImagesModels", () => {
 		expect(calls[1].options?.apiKey).toBe("explicit");
 	});
 
+	it("merges provider-resolved env into image options", async () => {
+		const calls: GenerateCall[] = [];
+		const models = createImagesModels();
+		models.setProvider(
+			createImagesProvider({
+				id: "p1",
+				auth: {
+					apiKey: {
+						name: "Test key",
+						resolve: async () => ({
+							auth: { apiKey: "provider-key" },
+							env: { PROVIDER_ONLY: "provider", SHARED: "provider" },
+						}),
+					},
+				},
+				models: [testImageModel("p1", "model-a")],
+				api: {
+					generateImages: async (model, _context, options) => {
+						calls.push({ model, options });
+						return okResult(model);
+					},
+				},
+			}),
+		);
+		const model = models.getModel("p1", "model-a")!;
+
+		await models.generateImages(model, context, {
+			apiKey: "request-key",
+			env: { REQUEST_ONLY: "request", SHARED: "request" },
+		});
+
+		expect(calls[0].options?.apiKey).toBe("request-key");
+		expect(calls[0].options?.env).toEqual({
+			PROVIDER_ONLY: "provider",
+			REQUEST_ONLY: "request",
+			SHARED: "request",
+		});
+	});
+
 	it("returns an error result for unknown providers and unconfigured auth rejections", async () => {
 		const models = createImagesModels({ authContext: fakeAuthContext({}) });
 		const ghost = await models.generateImages(testImageModel("ghost", "m"), context);

@@ -10,7 +10,7 @@ export const ZAI_MODELS = {
 		api: "openai-completions",
 		provider: "zai",
 		baseUrl: "https://api.z.ai/api/coding/paas/v4",
-		compat: {"supportsDeveloperRole":false,"thinkingFormat":"zai"},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"thinkingFormat":"zai"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -28,7 +28,7 @@ export const ZAI_MODELS = {
 		api: "openai-completions",
 		provider: "zai",
 		baseUrl: "https://api.z.ai/api/coding/paas/v4",
-		compat: {"supportsDeveloperRole":false,"thinkingFormat":"zai","zaiToolStream":true},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"thinkingFormat":"zai","zaiToolStream":true},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -46,7 +46,7 @@ export const ZAI_MODELS = {
 		api: "openai-completions",
 		provider: "zai",
 		baseUrl: "https://api.z.ai/api/coding/paas/v4",
-		compat: {"supportsDeveloperRole":false,"thinkingFormat":"zai","zaiToolStream":true},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"thinkingFormat":"zai","zaiToolStream":true},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -64,7 +64,7 @@ export const ZAI_MODELS = {
 		api: "openai-completions",
 		provider: "zai",
 		baseUrl: "https://api.z.ai/api/coding/paas/v4",
-		compat: {"supportsDeveloperRole":false,"thinkingFormat":"zai","zaiToolStream":true},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"thinkingFormat":"zai","zaiToolStream":true},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -82,7 +82,7 @@ export const ZAI_MODELS = {
 		api: "openai-completions",
 		provider: "zai",
 		baseUrl: "https://api.z.ai/api/coding/paas/v4",
-		compat: {"supportsDeveloperRole":false,"thinkingFormat":"zai","supportsReasoningEffort":true,"zaiToolStream":true},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":true,"thinkingFormat":"zai","zaiToolStream":true},
 		reasoning: true,
 		thinkingLevelMap: {"minimal":null,"low":"high","medium":"high","high":"high","xhigh":"max"},
 		input: ["text"],
@@ -101,7 +101,7 @@ export const ZAI_MODELS = {
 		api: "openai-completions",
 		provider: "zai",
 		baseUrl: "https://api.z.ai/api/coding/paas/v4",
-		compat: {"supportsDeveloperRole":false,"thinkingFormat":"zai","zaiToolStream":true},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"thinkingFormat":"zai","zaiToolStream":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {

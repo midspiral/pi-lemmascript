@@ -301,11 +301,28 @@ describe("harness compaction", () => {
 				createMessageEntry({ ...assistant, stopReason: "error" }),
 			]),
 		).toBeUndefined();
+		expect(
+			getLastAssistantUsage([
+				createMessageEntry(createUserMessage("user")),
+				createMessageEntry(assistant),
+				createMessageEntry(createAssistantMessage("partial", createMockUsage(0, 0))),
+			]),
+		).toBe(usage);
 		expect(estimateContextTokens([createUserMessage("no usage")]).lastUsageIndex).toBeNull();
 		expect(estimateContextTokens([assistant, createUserMessage("tail")])).toMatchObject({
 			usageTokens: 20,
 			lastUsageIndex: 0,
 		});
+		const estimate = estimateContextTokens([
+			createUserMessage("Hello"),
+			assistant,
+			createUserMessage("continue"),
+			createAssistantMessage("Partial thinking", createMockUsage(0, 0)),
+		]);
+		expect(estimate.usageTokens).toBe(20);
+		expect(estimate.lastUsageIndex).toBe(1);
+		expect(estimate.trailingTokens).toBeGreaterThan(0);
+		expect(estimate.tokens).toBe(20 + estimate.trailingTokens);
 	});
 
 	it("builds session context with a compaction entry", () => {

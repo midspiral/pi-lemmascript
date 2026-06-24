@@ -546,12 +546,10 @@ export class ModelRegistry {
 					);
 				}
 			} else if (!isBuiltIn) {
-				// Non-built-in providers with custom models require endpoint + auth.
+				// Non-built-in providers with custom models require an endpoint.
+				// Auth can come from auth.json, --api-key, or provider request config.
 				if (!providerConfig.baseUrl) {
 					throw new Error(`Provider ${providerName}: "baseUrl" is required when defining custom models.`);
-				}
-				if (!providerConfig.apiKey) {
-					throw new Error(`Provider ${providerName}: "apiKey" is required when defining custom models.`);
 				}
 			}
 			// Built-in providers with custom models: baseUrl/apiKey/api are optional,

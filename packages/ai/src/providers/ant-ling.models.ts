@@ -10,7 +10,7 @@ export const ANT_LING_MODELS = {
 		api: "openai-completions",
 		provider: "ant-ling",
 		baseUrl: "https://api.ant-ling.com/v1",
-		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","supportsLongCacheRetention":false},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","thinkingFormat":"ant-ling","supportsLongCacheRetention":false},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -28,7 +28,7 @@ export const ANT_LING_MODELS = {
 		api: "openai-completions",
 		provider: "ant-ling",
 		baseUrl: "https://api.ant-ling.com/v1",
-		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","supportsLongCacheRetention":false},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","thinkingFormat":"ant-ling","supportsLongCacheRetention":false},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -46,7 +46,7 @@ export const ANT_LING_MODELS = {
 		api: "openai-completions",
 		provider: "ant-ling",
 		baseUrl: "https://api.ant-ling.com/v1",
-		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","supportsLongCacheRetention":false,"thinkingFormat":"ant-ling"},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","thinkingFormat":"ant-ling","supportsLongCacheRetention":false},
 		reasoning: true,
 		thinkingLevelMap: {"off":null,"minimal":null,"low":null,"medium":null,"high":"high","xhigh":"xhigh"},
 		input: ["text"],

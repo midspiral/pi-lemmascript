@@ -10,6 +10,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -27,6 +28,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -44,6 +46,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -61,6 +64,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -78,6 +82,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -95,6 +100,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -112,7 +118,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
-		compat: {"forceAdaptiveThinking":true},
+		compat: {"sendSessionAffinityHeaders":true,"forceAdaptiveThinking":true},
 		reasoning: true,
 		thinkingLevelMap: {"off":null,"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -131,6 +137,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -148,6 +155,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -165,6 +173,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -182,6 +191,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -199,7 +209,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
-		compat: {"forceAdaptiveThinking":true},
+		compat: {"sendSessionAffinityHeaders":true,"forceAdaptiveThinking":true},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"max"},
 		input: ["text", "image"],
@@ -218,7 +228,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
-		compat: {"forceAdaptiveThinking":true,"supportsTemperature":false},
+		compat: {"sendSessionAffinityHeaders":true,"forceAdaptiveThinking":true,"supportsTemperature":false},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -237,7 +247,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
-		compat: {"forceAdaptiveThinking":true,"supportsTemperature":false},
+		compat: {"sendSessionAffinityHeaders":true,"forceAdaptiveThinking":true,"supportsTemperature":false},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -256,6 +266,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -273,6 +284,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+		compat: {"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -290,7 +302,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "anthropic-messages",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
-		compat: {"forceAdaptiveThinking":true},
+		compat: {"sendSessionAffinityHeaders":true,"forceAdaptiveThinking":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -587,7 +599,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "openai-completions",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/compat",
-		compat: {"sendSessionAffinityHeaders":true},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","supportsStrictMode":false,"supportsLongCacheRetention":false,"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -605,7 +617,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "openai-completions",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/compat",
-		compat: {"sendSessionAffinityHeaders":true},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","supportsStrictMode":false,"supportsLongCacheRetention":false,"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -623,7 +635,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "openai-completions",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/compat",
-		compat: {"sendSessionAffinityHeaders":true},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","supportsStrictMode":false,"supportsLongCacheRetention":false,"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -641,7 +653,7 @@ export const CLOUDFLARE_AI_GATEWAY_MODELS = {
 		api: "openai-completions",
 		provider: "cloudflare-ai-gateway",
 		baseUrl: "https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/compat",
-		compat: {"sendSessionAffinityHeaders":true},
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsReasoningEffort":false,"maxTokensField":"max_tokens","supportsStrictMode":false,"supportsLongCacheRetention":false,"sendSessionAffinityHeaders":true},
 		reasoning: true,
 		input: ["text"],
 		cost: {

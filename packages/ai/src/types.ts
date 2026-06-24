@@ -99,6 +99,7 @@ export type Transport = "sse" | "websocket" | "websocket-cached" | "auto";
 
 /** Provider-scoped environment overrides. Values take precedence over process.env. */
 export type ProviderEnv = Record<string, string>;
+export type ProviderHeaders = Record<string, string | null>;
 
 export interface ProviderResponse {
 	status: number;
@@ -142,8 +143,9 @@ export interface StreamOptions {
 	 * On AWS Bedrock these are injected via a Smithy `build`-step middleware so
 	 * they are covered by SigV4 signing; reserved headers (`x-amz-*`,
 	 * `authorization`, `host`) are silently ignored to preserve SigV4 / bearer auth.
+	 * A null value suppresses a provider/API default header with the same name.
 	 */
-	headers?: Record<string, string>;
+	headers?: ProviderHeaders;
 	/**
 	 * HTTP request timeout in milliseconds for providers/SDKs that support it.
 	 * For example, OpenAI and Anthropic SDK clients default to 10 minutes.
@@ -240,6 +242,11 @@ export interface ImagesOptions {
 	signal?: AbortSignal;
 	apiKey?: string;
 	/**
+	 * Provider-scoped environment values. These take precedence over process.env for
+	 * provider configuration such as endpoint placeholders and proxy variables.
+	 */
+	env?: ProviderEnv;
+	/**
 	 * Optional callback for inspecting or replacing provider payloads before sending.
 	 * Return undefined to keep the payload unchanged.
 	 */
@@ -251,8 +258,9 @@ export interface ImagesOptions {
 	/**
 	 * Optional custom HTTP headers to include in API requests.
 	 * Merged with provider defaults; can override default headers.
+	 * A null value suppresses a provider/API default header with the same name.
 	 */
-	headers?: Record<string, string>;
+	headers?: ProviderHeaders;
 	/**
 	 * HTTP request timeout in milliseconds for providers/SDKs that support it.
 	 */

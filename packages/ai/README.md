@@ -44,6 +44,7 @@ Unified LLM API with provider collections, automatic auth resolution, token and 
 - [Cross-Provider Handoffs](#cross-provider-handoffs)
 - [Context Serialization](#context-serialization)
 - [Browser Usage](#browser-usage)
+- [Bundling and Tree Shaking](#bundling-and-tree-shaking)
 - [OAuth Providers](#oauth-providers)
   - [Vertex AI](#vertex-ai)
   - [CLI Login](#cli-login)
@@ -95,7 +96,7 @@ TypeBox exports are re-exported from `@earendil-works/pi-ai`: `Type`, `Static`, 
 
 ## Quick Start
 
-You build a `Models` collection of providers and stream through it. The quickest start registers every built-in provider; apps that care about bundle size register individual providers instead (see [Provider Factories](#provider-factories)). Either way, provider SDKs load lazily on first request.
+You build a `Models` collection of providers and stream through it. The quickest start registers every built-in provider; apps that care about bundle size register individual providers instead (see [Provider Factories](#provider-factories) and [Bundling and Tree Shaking](#bundling-and-tree-shaking)).
 
 ```typescript
 import { Type, type Context, type Tool } from '@earendil-works/pi-ai';
@@ -245,7 +246,7 @@ models.setProvider(anthropicProvider());
 models.setProvider(openrouterProvider());
 ```
 
-Provider SDKs (`@anthropic-ai/sdk`, `openai`, `@google/genai`, AWS) are **not** imported by registering a provider — they load lazily on the first request to a model of that API.
+Provider factories import their model catalog and a lazy API wrapper. They do not import other providers. With bundler code splitting, SDK implementations (`@anthropic-ai/sdk`, `openai`, `@google/genai`, etc.) stay in lazy chunks loaded on the first request to a model of that API.
 
 ### All Built-in Providers
 
@@ -257,7 +258,7 @@ import { builtinModels } from '@earendil-works/pi-ai/providers/all';
 const models = builtinModels(); // a Models collection with every built-in provider registered
 ```
 
-This imports all catalogs (it is the heavy, explicit entrypoint) but still no SDKs. `builtinModels()` accepts the same options as `createModels()` (`credentials`, `authContext`); `builtinProviders()` returns the provider array if you want to register them on your own collection.
+This imports all catalogs and every built-in provider factory. It is the heavy, explicit entrypoint. `builtinModels()` accepts the same options as `createModels()` (`credentials`, `authContext`); `builtinProviders()` returns the provider array if you want to register them on your own collection.
 
 ### Querying Models
 
@@ -359,6 +360,19 @@ const models = createModels({ credentials: myFileBackedStore });
 ```
 
 The contract is small: `read(providerId)`, `modify(providerId, fn)` (the only write path — a serialized read-modify-write), and `delete(providerId)`. OAuth token refresh runs inside `modify`, so concurrent requests and processes cannot double-refresh a rotated token. A stored credential *owns* its provider: environment variables are only consulted when nothing is stored, and a failed refresh never silently falls back to an env key.
+
+API-key credentials use the same discriminator as pi's `auth.json` and can carry provider-scoped env/config values:
+
+```typescript
+const credential = {
+  type: 'api_key',
+  key: '...',
+  env: {
+    CLOUDFLARE_ACCOUNT_ID: 'account-id',
+    CLOUDFLARE_GATEWAY_ID: 'gateway-id'
+  }
+} as const;
+```
 
 ### Environment Variables
 
@@ -1041,7 +1055,7 @@ Built-in API implementations live under `./api/<api-id>`:
 | `mistral-conversations` | `MistralOptions` |
 | `bedrock-converse-stream` | `BedrockOptions` |
 
-Importing an implementation module loads its SDK. The `./api/<id>.lazy` wrappers (used by the provider factories) defer that load to the first request. Legacy subpaths from older releases (`./anthropic`, `./google`, `./mistral`, `./openai-completions`, ...) still resolve to the corresponding API implementation modules.
+Importing an implementation module loads its SDK. The `./api/<id>.lazy` wrappers (used by the provider factories) defer that load to the first request when the runtime or bundler supports dynamic import chunking. Legacy raw API subpaths from older releases (`./anthropic`, `./google`, `./mistral`, `./openai-completions`, ...) were removed; use `@earendil-works/pi-ai/api/<api-id>`.
 
 ### OpenAI Compatibility Settings
 
@@ -1271,6 +1285,60 @@ Browser compatibility notes:
 - OAuth login flows are Node-only. They are lazy-loaded behind bundler-opaque imports, so registering an OAuth-capable provider does not pull Node-only code into a browser bundle — only actually logging in would.
 - Use a server-side proxy or backend service if you need Bedrock or OAuth-based auth from a web app.
 
+## Bundling and Tree Shaking
+
+For small bundles, import only the providers you need:
+
+```typescript
+import { createModels } from '@earendil-works/pi-ai';
+import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
+
+const models = createModels();
+models.setProvider(openaiProvider());
+```
+
+Rules:
+
+- `@earendil-works/pi-ai` is the core entrypoint and does not import built-in catalogs, provider factories, or SDK implementations.
+- `@earendil-works/pi-ai/providers/<provider>` imports that provider's catalog and lazy API wrapper only.
+- `@earendil-works/pi-ai/providers/all` imports every built-in provider factory and all catalogs. Use it only when you want the full built-in set.
+- With code splitting, provider SDKs stay in lazy chunks and load on first request.
+- Without code splitting, bundlers fold reachable lazy API implementations into the single bundle. A single-provider bundle then includes that provider's SDK; `providers/all` includes all statically visible SDKs. Bedrock is the exception: its AWS SDK implementation is loaded through a bundler-opaque Node-only import.
+- Importing `@earendil-works/pi-ai/api/<api-id>` directly loads that API implementation and its SDK immediately.
+
+Avoid `@earendil-works/pi-ai/compat` in new bundled apps; it preserves the old global API and imports the full built-in catalog surface.
+
+For single-file Node ESM bundles, some SDK dependencies may still use dynamic CommonJS `require()` internally. If you see errors such as `Dynamic require of "child_process" is not supported`, add a Node `require` shim to the bundle. With esbuild:
+
+```bash
+esbuild app.js --bundle --platform=node --format=esm \
+  --banner:js='import { createRequire } from "module";const require = createRequire(import.meta.url);' \
+  --outfile=app.bundle.js
+```
+
+This is only for Node bundles; it is not a browser or Cloudflare Workers workaround.
+
+Bedrock is Node-only. Add it like any other provider:
+
+```typescript
+import { createModels } from '@earendil-works/pi-ai';
+import { amazonBedrockProvider } from '@earendil-works/pi-ai/providers/amazon-bedrock';
+
+const models = createModels();
+models.setProvider(amazonBedrockProvider());
+```
+
+In normal Node package usage and code-split bundles, Bedrock loads its AWS SDK implementation lazily. For a standalone single-file bundle that must include Bedrock support, register the implementation module explicitly:
+
+```typescript
+import { setBedrockProviderModule } from '@earendil-works/pi-ai/api/bedrock-converse-stream.lazy';
+import { bedrockProviderModule } from '@earendil-works/pi-ai/bedrock-provider';
+
+setBedrockProviderModule(bedrockProviderModule);
+```
+
+That explicit override bundles the AWS SDK. Without it, Bedrock's opaque runtime import expects the package's Bedrock implementation file to be available at runtime.
+
 ### Provider-Scoped Environment Overrides
 
 Pass `env` in stream options to scope provider configuration to a request. Values in `env` are used before process environment variables for provider auth and configuration such as Cloudflare account IDs, Azure OpenAI settings, Vertex project/location, Bedrock settings, `PI_CACHE_RETENTION`, and `HTTP_PROXY`/`HTTPS_PROXY`.
@@ -1399,7 +1467,7 @@ Compat is a strict superset of the root entrypoint, so a file can switch its imp
 | `stream(model, ctx, opts)` (env-key injection) | `models.stream(model, ctx, opts)` (provider auth resolution) |
 | `registerApiProvider({ api, stream, streamSimple })` | `createProvider({ id, auth, models, api })` + `models.setProvider()` |
 | `getEnvApiKey('openai')` | `await models.getAuth(model)` |
-| `streamAnthropic(model, ctx, opts)` | `stream` from `@earendil-works/pi-ai/anthropic`, or a provider in a collection |
+| `streamAnthropic(model, ctx, opts)` | `stream` from `@earendil-works/pi-ai/api/anthropic-messages`, or a provider in a collection |
 | `registerFauxProvider()` | `fauxProvider()` + `models.setProvider()` |
 
 ## Development

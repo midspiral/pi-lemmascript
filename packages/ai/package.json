@@ -1,6 +1,6 @@
 {
 	"name": "@earendil-works/pi-ai",
-	"version": "0.79.10",
+	"version": "0.80.2",
 	"description": "Unified LLM API with automatic model discovery and provider configuration",
 	"type": "module",
 	"main": "./dist/index.js",
@@ -26,38 +26,6 @@
 		"./api/*": {
 			"types": "./dist/api/*.d.ts",
 			"import": "./dist/api/*.js"
-		},
-		"./anthropic": {
-			"types": "./dist/api/anthropic-messages.d.ts",
-			"import": "./dist/api/anthropic-messages.js"
-		},
-		"./azure-openai-responses": {
-			"types": "./dist/api/azure-openai-responses.d.ts",
-			"import": "./dist/api/azure-openai-responses.js"
-		},
-		"./google": {
-			"types": "./dist/api/google-generative-ai.d.ts",
-			"import": "./dist/api/google-generative-ai.js"
-		},
-		"./google-vertex": {
-			"types": "./dist/api/google-vertex.d.ts",
-			"import": "./dist/api/google-vertex.js"
-		},
-		"./mistral": {
-			"types": "./dist/api/mistral-conversations.d.ts",
-			"import": "./dist/api/mistral-conversations.js"
-		},
-		"./openai-codex-responses": {
-			"types": "./dist/api/openai-codex-responses.d.ts",
-			"import": "./dist/api/openai-codex-responses.js"
-		},
-		"./openai-completions": {
-			"types": "./dist/api/openai-completions.d.ts",
-			"import": "./dist/api/openai-completions.js"
-		},
-		"./openai-responses": {
-			"types": "./dist/api/openai-responses.d.ts",
-			"import": "./dist/api/openai-responses.js"
 		},
 		"./oauth": {
 			"types": "./dist/oauth.d.ts",

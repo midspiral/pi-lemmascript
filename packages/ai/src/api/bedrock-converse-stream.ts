@@ -48,6 +48,7 @@ import type {
 	ToolResultMessage,
 } from "../types.ts";
 import { AssistantMessageEventStream } from "../utils/event-stream.ts";
+import { providerHeadersToRecord } from "../utils/headers.ts";
 import { parseStreamingJson } from "../utils/json-parse.ts";
 import { resolveHttpProxyUrlForTarget } from "../utils/node-http-proxy.ts";
 import { getProviderEnvValue } from "../utils/provider-env.ts";
@@ -204,8 +205,9 @@ export const stream: StreamFunction<"bedrock-converse-stream", BedrockOptions> =
 
 		try {
 			const client = new BedrockRuntimeClient(config);
-			if (options.headers && Object.keys(options.headers).length > 0) {
-				addCustomHeadersMiddleware(client, options.headers);
+			const customHeaders = providerHeadersToRecord(options.headers);
+			if (customHeaders) {
+				addCustomHeadersMiddleware(client, customHeaders);
 			}
 			const cacheRetention = resolveCacheRetention(options.cacheRetention, options.env);
 			const inferenceMaxTokens = options.maxTokens ?? (isAnthropicClaudeModel(model) ? model.maxTokens : undefined);

@@ -49,6 +49,8 @@ import { handleConfigCommand, handlePackageCommand } from "./package-manager-cli
 import { isLocalPath, normalizePath, resolvePath } from "./utils/paths.ts";
 import { cleanupWindowsSelfUpdateQuarantine } from "./utils/windows-self-update.ts";
 
+const EXTENSION_LOAD_FAILURE_HINT = 'Hint: Start without extensions using "pi -ne".';
+
 /**
  * Read all content from piped stdin.
  * Returns undefined if stdin is a TTY (interactive terminal).
@@ -774,6 +776,9 @@ export async function main(args: string[], options?: MainOptions) {
 	time("resolveModelScope");
 	reportDiagnostics(runtime.diagnostics);
 	if (runtime.diagnostics.some((diagnostic) => diagnostic.type === "error")) {
+		if (runtime.diagnostics.some((diagnostic) => diagnostic.message.includes("Failed to load extension"))) {
+			console.error(chalk.yellow(EXTENSION_LOAD_FAILURE_HINT));
+		}
 		process.exit(1);
 	}
 	time("createAgentSession");

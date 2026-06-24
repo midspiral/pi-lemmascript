@@ -1,4 +1,3 @@
-import { registerApiProvider, unregisterApiProviders } from "../api-registry.ts";
 import { createProvider, type Provider } from "../models.ts";
 import type {
 	AssistantMessage,
@@ -401,7 +400,7 @@ async function streamWithDeltas(
 	stream.end(message);
 }
 
-function createFauxCore(options: RegisterFauxProviderOptions) {
+export function createFauxCore(options: RegisterFauxProviderOptions) {
 	const api = options.api ?? randomId(DEFAULT_API);
 	const provider = options.provider ?? DEFAULT_PROVIDER;
 	const minTokenSize = Math.max(
@@ -504,25 +503,6 @@ function createFauxCore(options: RegisterFauxProviderOptions) {
 		},
 		getPendingResponseCount() {
 			return pendingResponses.length;
-		},
-	};
-}
-
-/** Registers the faux api into the legacy global api-registry. */
-export function registerFauxProvider(options: RegisterFauxProviderOptions = {}): FauxProviderRegistration {
-	const core = createFauxCore(options);
-	const sourceId = randomId("faux-provider");
-	registerApiProvider({ api: core.api, stream: core.stream, streamSimple: core.streamSimple }, sourceId);
-	return {
-		api: core.api,
-		models: core.models,
-		getModel: core.getModel,
-		state: core.state,
-		setResponses: core.setResponses,
-		appendResponses: core.appendResponses,
-		getPendingResponseCount: core.getPendingResponseCount,
-		unregister() {
-			unregisterApiProviders(sourceId);
 		},
 	};
 }

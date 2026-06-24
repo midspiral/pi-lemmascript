@@ -10,6 +10,7 @@ import type {
 	AssistantMessage,
 	Context,
 	Model,
+	ProviderHeaders,
 	SimpleStreamOptions,
 	StreamFunction,
 	StreamOptions,
@@ -20,6 +21,7 @@ import type {
 	ToolCall,
 } from "../types.ts";
 import { AssistantMessageEventStream } from "../utils/event-stream.ts";
+import { providerHeadersToRecord } from "../utils/headers.ts";
 import { sanitizeSurrogates } from "../utils/sanitize-unicode.ts";
 import type { GoogleThinkingLevel } from "./google-shared.ts";
 import {
@@ -318,15 +320,16 @@ export const streamSimple: StreamFunction<"google-generative-ai", SimpleStreamOp
 function createClient(
 	model: Model<"google-generative-ai">,
 	apiKey?: string,
-	optionsHeaders?: Record<string, string>,
+	optionsHeaders?: ProviderHeaders,
 ): GoogleGenAI {
 	const httpOptions: { baseUrl?: string; apiVersion?: string; headers?: Record<string, string> } = {};
 	if (model.baseUrl) {
 		httpOptions.baseUrl = model.baseUrl;
 		httpOptions.apiVersion = ""; // baseUrl already includes version path, don't append
 	}
-	if (model.headers || optionsHeaders) {
-		httpOptions.headers = { ...model.headers, ...optionsHeaders };
+	const headers = providerHeadersToRecord({ ...model.headers, ...optionsHeaders });
+	if (headers) {
+		httpOptions.headers = headers;
 	}
 
 	return new GoogleGenAI({

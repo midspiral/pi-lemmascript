@@ -10,6 +10,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -27,6 +28,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -44,6 +46,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -61,6 +64,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -78,6 +82,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -95,6 +100,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -112,6 +118,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -129,6 +136,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -146,6 +154,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -163,6 +172,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -180,6 +190,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -197,6 +208,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -214,6 +226,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"max"},
 		input: ["text", "image"],
@@ -232,6 +245,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"max"},
 		input: ["text", "image"],
@@ -250,6 +264,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -268,6 +283,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -286,6 +302,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -304,6 +321,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -322,6 +340,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -339,6 +358,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -356,6 +376,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter","cacheControlFormat":"anthropic"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -373,6 +394,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -390,6 +412,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -407,6 +430,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -424,6 +448,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -441,6 +466,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -458,6 +484,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -475,6 +502,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -492,6 +520,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -509,6 +538,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -526,6 +556,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -543,6 +574,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -560,6 +592,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -577,6 +610,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -594,6 +628,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -611,6 +646,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -628,6 +664,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -645,6 +682,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -662,6 +700,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -679,6 +718,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -696,7 +736,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
-		compat: {"requiresReasoningContentOnAssistantMessages":true},
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter","requiresReasoningContentOnAssistantMessages":true},
 		reasoning: true,
 		thinkingLevelMap: {"minimal":null,"low":null,"medium":null,"high":"high","xhigh":"xhigh"},
 		input: ["text"],
@@ -715,7 +755,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
-		compat: {"requiresReasoningContentOnAssistantMessages":true},
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter","requiresReasoningContentOnAssistantMessages":true},
 		reasoning: true,
 		thinkingLevelMap: {"minimal":null,"low":null,"medium":null,"high":"high","xhigh":"xhigh"},
 		input: ["text"],
@@ -728,29 +768,13 @@ export const OPENROUTER_MODELS = {
 		contextWindow: 1048576,
 		maxTokens: 384000,
 	} satisfies Model<"openai-completions">,
-	"essentialai/rnj-1-instruct": {
-		id: "essentialai/rnj-1-instruct",
-		name: "EssentialAI: Rnj 1 Instruct",
-		api: "openai-completions",
-		provider: "openrouter",
-		baseUrl: "https://openrouter.ai/api/v1",
-		reasoning: false,
-		input: ["text"],
-		cost: {
-			input: 0.15,
-			output: 0.15,
-			cacheRead: 0,
-			cacheWrite: 0,
-		},
-		contextWindow: 32768,
-		maxTokens: 4096,
-	} satisfies Model<"openai-completions">,
 	"google/gemini-2.5-flash": {
 		id: "google/gemini-2.5-flash",
 		name: "Google: Gemini 2.5 Flash",
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -768,6 +792,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -785,6 +810,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -802,6 +828,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -819,6 +846,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -836,6 +864,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -853,6 +882,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -870,6 +900,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -887,6 +918,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -904,6 +936,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -921,6 +954,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -938,6 +972,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -955,6 +990,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -972,6 +1008,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -989,6 +1026,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1006,6 +1044,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1023,6 +1062,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1040,6 +1080,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1057,6 +1098,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1074,6 +1116,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1091,6 +1134,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"off":null},
 		input: ["text"],
@@ -1109,6 +1153,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1126,6 +1171,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1143,6 +1189,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1160,6 +1207,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1177,6 +1225,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1194,6 +1243,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1211,6 +1261,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1228,6 +1279,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1245,6 +1297,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1262,6 +1315,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1279,6 +1333,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1296,6 +1351,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1313,6 +1369,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1330,6 +1387,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1347,6 +1405,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1364,16 +1423,17 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
-			input: 0.25,
-			output: 1,
-			cacheRead: 0.05,
+			input: 0.24,
+			output: 0.96,
+			cacheRead: 0,
 			cacheWrite: 0,
 		},
 		contextWindow: 204800,
-		maxTokens: 131072,
+		maxTokens: 196608,
 	} satisfies Model<"openai-completions">,
 	"minimax/minimax-m3": {
 		id: "minimax/minimax-m3",
@@ -1381,6 +1441,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1398,6 +1459,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1415,6 +1477,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1432,6 +1495,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1449,6 +1513,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1466,6 +1531,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1483,6 +1549,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1500,6 +1567,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1517,6 +1585,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1534,6 +1603,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1551,6 +1621,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1568,6 +1639,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1585,6 +1657,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1602,6 +1675,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1619,6 +1693,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1636,6 +1711,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -1653,6 +1729,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1670,6 +1747,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1687,6 +1765,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1704,6 +1783,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1721,6 +1801,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1738,6 +1819,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1755,7 +1837,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
-		compat: {"supportsDeveloperRole":false,"requiresReasoningContentOnAssistantMessages":true},
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter","requiresReasoningContentOnAssistantMessages":true},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1773,33 +1855,17 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
-			input: 0.612,
-			output: 3.069,
-			cacheRead: 0.1296,
+			input: 0.74,
+			output: 3.5,
+			cacheRead: 0.15,
 			cacheWrite: 0,
 		},
 		contextWindow: 262144,
-		maxTokens: 262144,
-	} satisfies Model<"openai-completions">,
-	"nex-agi/nex-n2-pro:free": {
-		id: "nex-agi/nex-n2-pro:free",
-		name: "Nex AGI: Nex-N2-Pro (free)",
-		api: "openai-completions",
-		provider: "openrouter",
-		baseUrl: "https://openrouter.ai/api/v1",
-		reasoning: true,
-		input: ["text", "image"],
-		cost: {
-			input: 0,
-			output: 0,
-			cacheRead: 0,
-			cacheWrite: 0,
-		},
-		contextWindow: 262144,
-		maxTokens: 256000,
+		maxTokens: 16384,
 	} satisfies Model<"openai-completions">,
 	"nvidia/llama-3.3-nemotron-super-49b-v1.5": {
 		id: "nvidia/llama-3.3-nemotron-super-49b-v1.5",
@@ -1807,6 +1873,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1824,6 +1891,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1841,6 +1909,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1858,6 +1927,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1875,6 +1945,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1892,6 +1963,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1909,6 +1981,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1926,6 +1999,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1943,6 +2017,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -1960,6 +2035,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -1977,6 +2053,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -1994,6 +2071,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -2011,6 +2089,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -2028,6 +2107,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -2045,6 +2125,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2062,6 +2143,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -2079,6 +2161,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2096,6 +2179,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2113,6 +2197,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2130,6 +2215,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2147,6 +2233,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2164,6 +2251,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2181,6 +2269,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2198,6 +2287,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2215,6 +2305,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2232,6 +2323,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2249,6 +2341,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2266,6 +2359,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2283,6 +2377,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2300,6 +2395,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2317,6 +2413,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2334,6 +2431,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2351,6 +2449,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2368,6 +2467,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2385,6 +2485,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2402,6 +2503,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2420,6 +2522,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2438,6 +2541,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2456,6 +2560,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2474,6 +2579,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2492,6 +2598,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2510,6 +2617,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2528,6 +2636,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2546,6 +2655,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2564,6 +2674,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2582,6 +2693,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text", "image"],
@@ -2600,6 +2712,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh","off":null,"minimal":null,"low":null},
 		input: ["text", "image"],
@@ -2618,6 +2731,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -2635,6 +2749,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -2652,6 +2767,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -2669,6 +2785,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -2686,6 +2803,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -2703,6 +2821,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -2720,6 +2839,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -2737,6 +2857,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -2754,6 +2875,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2771,6 +2893,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2788,6 +2911,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2805,6 +2929,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -2822,6 +2947,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -2839,6 +2965,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2856,6 +2983,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2873,6 +3001,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2890,6 +3019,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2907,6 +3037,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2924,6 +3055,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -2941,6 +3073,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -2958,6 +3091,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -2975,6 +3109,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -2992,6 +3127,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3009,6 +3145,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3026,6 +3163,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3037,29 +3175,13 @@ export const OPENROUTER_MODELS = {
 		contextWindow: 262144,
 		maxTokens: 32768,
 	} satisfies Model<"openai-completions">,
-	"prime-intellect/intellect-3": {
-		id: "prime-intellect/intellect-3",
-		name: "Prime Intellect: INTELLECT-3",
-		api: "openai-completions",
-		provider: "openrouter",
-		baseUrl: "https://openrouter.ai/api/v1",
-		reasoning: true,
-		input: ["text"],
-		cost: {
-			input: 0.2,
-			output: 1.1,
-			cacheRead: 0,
-			cacheWrite: 0,
-		},
-		contextWindow: 131072,
-		maxTokens: 131072,
-	} satisfies Model<"openai-completions">,
 	"qwen/qwen-2.5-72b-instruct": {
 		id: "qwen/qwen-2.5-72b-instruct",
 		name: "Qwen2.5 72B Instruct",
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3077,6 +3199,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3094,6 +3217,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3111,6 +3235,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3128,6 +3253,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3145,6 +3271,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3162,6 +3289,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3179,6 +3307,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3196,6 +3325,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3213,6 +3343,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3230,6 +3361,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3247,6 +3379,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3264,6 +3397,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3281,6 +3415,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3298,6 +3433,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3315,6 +3451,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3332,6 +3469,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3349,6 +3487,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3366,6 +3505,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3383,6 +3523,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3400,6 +3541,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3417,6 +3559,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3434,6 +3577,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3451,6 +3595,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3468,6 +3613,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3485,6 +3631,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -3502,6 +3649,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3519,6 +3667,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -3536,6 +3685,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3553,6 +3703,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -3570,6 +3721,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -3587,6 +3739,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3604,6 +3757,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3621,6 +3775,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3638,6 +3793,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3655,6 +3811,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3672,6 +3829,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3689,6 +3847,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3706,6 +3865,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3723,6 +3883,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3740,6 +3901,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3757,6 +3919,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3774,6 +3937,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3791,6 +3955,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3808,6 +3973,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3825,6 +3991,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3842,6 +4009,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3859,6 +4027,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text", "image"],
 		cost: {
@@ -3876,6 +4045,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3893,6 +4063,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3910,6 +4081,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3927,6 +4099,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -3944,6 +4117,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -3955,29 +4129,13 @@ export const OPENROUTER_MODELS = {
 		contextWindow: 262144,
 		maxTokens: 4096,
 	} satisfies Model<"openai-completions">,
-	"thedrummer/rocinante-12b": {
-		id: "thedrummer/rocinante-12b",
-		name: "TheDrummer: Rocinante 12B",
-		api: "openai-completions",
-		provider: "openrouter",
-		baseUrl: "https://openrouter.ai/api/v1",
-		reasoning: false,
-		input: ["text"],
-		cost: {
-			input: 0.17,
-			output: 0.43,
-			cacheRead: 0,
-			cacheWrite: 0,
-		},
-		contextWindow: 32768,
-		maxTokens: 32768,
-	} satisfies Model<"openai-completions">,
 	"thedrummer/unslopnemo-12b": {
 		id: "thedrummer/unslopnemo-12b",
 		name: "TheDrummer: UnslopNemo 12B",
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: false,
 		input: ["text"],
 		cost: {
@@ -3995,6 +4153,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4012,6 +4171,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4029,6 +4189,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4046,6 +4207,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4063,6 +4225,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4080,6 +4243,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4097,6 +4261,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4114,6 +4279,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4131,6 +4297,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4148,6 +4315,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4165,6 +4333,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4182,6 +4351,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4199,6 +4369,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4216,6 +4387,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4233,6 +4405,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4250,6 +4423,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -4267,17 +4441,36 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		thinkingLevelMap: {"xhigh":"xhigh"},
 		input: ["text"],
 		cost: {
-			input: 1,
-			output: 4,
-			cacheRead: 0.18,
+			input: 0.98,
+			output: 3.08,
+			cacheRead: 0.182,
 			cacheWrite: 0,
 		},
 		contextWindow: 1048576,
-		maxTokens: 32768,
+		maxTokens: 4096,
+	} satisfies Model<"openai-completions">,
+	"z-ai/glm-5v-turbo": {
+		id: "z-ai/glm-5v-turbo",
+		name: "Z.ai: GLM 5V Turbo",
+		api: "openai-completions",
+		provider: "openrouter",
+		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
+		reasoning: true,
+		input: ["text", "image"],
+		cost: {
+			input: 1.2,
+			output: 4,
+			cacheRead: 0.24,
+			cacheWrite: 0,
+		},
+		contextWindow: 202752,
+		maxTokens: 131072,
 	} satisfies Model<"openai-completions">,
 	"~anthropic/claude-fable-latest": {
 		id: "~anthropic/claude-fable-latest",
@@ -4285,6 +4478,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4302,6 +4496,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4319,6 +4514,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4336,6 +4532,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4353,6 +4550,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4370,6 +4568,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4387,6 +4586,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4404,6 +4604,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -4421,6 +4622,7 @@ export const OPENROUTER_MODELS = {
 		api: "openai-completions",
 		provider: "openrouter",
 		baseUrl: "https://openrouter.ai/api/v1",
+		compat: {"supportsDeveloperRole":false,"thinkingFormat":"openrouter"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {

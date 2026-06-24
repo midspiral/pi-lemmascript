@@ -13,9 +13,10 @@ import type {
 	ImagesFunction,
 	ImagesModel,
 	ImagesOptions,
+	ProviderHeaders,
 	TextContent,
 } from "../types.ts";
-import { headersToRecord } from "../utils/headers.ts";
+import { headersToRecord, providerHeadersToRecord } from "../utils/headers.ts";
 import { sanitizeSurrogates } from "../utils/sanitize-unicode.ts";
 
 interface OpenRouterGeneratedImage {
@@ -106,16 +107,13 @@ export const generateImages: ImagesFunction<"openrouter-images", ImagesOptions> 
 function createClient(
 	model: ImagesModel<"openrouter-images">,
 	apiKey: string,
-	optionsHeaders?: Record<string, string>,
+	optionsHeaders?: ProviderHeaders,
 ): OpenAI {
 	return new OpenAI({
 		apiKey,
 		baseURL: model.baseUrl,
 		dangerouslyAllowBrowser: true,
-		defaultHeaders: {
-			...model.headers,
-			...optionsHeaders,
-		},
+		defaultHeaders: providerHeadersToRecord({ ...model.headers, ...optionsHeaders }),
 	});
 }
 
