@@ -1,3 +1,5 @@
 packages/agent/src/harness/compaction/compaction.ts
 packages/coding-agent/src/core/compaction/compaction.ts
 packages/coding-agent/src/utils/changelog.ts
+packages/coding-agent/src/core/tools/truncate.ts
+packages/ai/src/models.ts
