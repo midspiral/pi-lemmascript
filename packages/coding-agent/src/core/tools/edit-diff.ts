@@ -107,9 +107,17 @@ function getReplacementLineRange(lines: LineSpan[], replacement: TextReplacement
 	return { startLine, endLine: endLine + 1 };
 }
 
+//@ verify
+//@ requires forall(k: nat, k < replacements.length ==> replacements[k].matchLength >= 0)
+//@ requires forall(k: nat, k < replacements.length ==> 0 <= replacements[k].matchIndex - offset && replacements[k].matchIndex - offset + replacements[k].matchLength <= content.length)
+//@ requires forall(k: nat, k + 1 < replacements.length ==> replacements[k].matchIndex + replacements[k].matchLength <= replacements[k + 1].matchIndex)
 function applyReplacements(content: string, replacements: TextReplacement[], offset = 0): string {
 	let result = content;
 	for (let i = replacements.length - 1; i >= 0; i--) {
+		//@ invariant -1 <= i && i < replacements.length
+		//@ invariant (i + 1 < replacements.length ? replacements[i + 1].matchIndex - offset : content.length) <= result.length
+		//@ invariant result.substring(0, (i + 1 < replacements.length ? replacements[i + 1].matchIndex - offset : content.length)) === content.substring(0, (i + 1 < replacements.length ? replacements[i + 1].matchIndex - offset : content.length))
+		//@ decreases i + 1
 		const replacement = replacements[i];
 		const matchIndex = replacement.matchIndex - offset;
 		result =
