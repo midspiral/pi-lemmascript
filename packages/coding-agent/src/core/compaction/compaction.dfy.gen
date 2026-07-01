@@ -2,6 +2,8 @@
 
 datatype Option<T> = None | Some(value: T)
 
+type Unknown(==, 0)
+
 function {:axiom} estimateTokens(message: AgentMessage): int
 
 datatype Role = bashExecution | custom | branchSummary | compactionSummary | user | assistant | toolResult
@@ -14,7 +16,7 @@ type Opaque_TextContent_or_ImageContent(==)
 
 datatype ArrayOf_Opaque_TextContent_or_ImageContent_Or_string = ArrayBranch(arr: seq<Opaque_TextContent_or_ImageContent>) | NonArrayBranch(val: string)
 
-datatype SessionEntry = message(message: AgentMessage, id: string, parentId: Option<string>, timestamp: string) | thinking_level_change(thinkingLevel: string, id: string, parentId: Option<string>, timestamp: string) | model_change(provider: string, modelId: string, id: string, parentId: Option<string>, timestamp: string) | compaction(summary: string, firstKeptEntryId: string, tokensBefore: int, details: Option<int>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string) | branch_summary(fromId: string, summary: string, details: Option<int>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string) | custom(customType: string, data: Option<int>, id: string, parentId: Option<string>, timestamp: string) | custom_message(customType: string, content: ArrayOf_Opaque_TextContent_or_ImageContent_Or_string, details: Option<int>, display: bool, id: string, parentId: Option<string>, timestamp: string) | label_(targetId: string, label_: Option<string>, id: string, parentId: Option<string>, timestamp: string) | session_info(name: Option<string>, id: string, parentId: Option<string>, timestamp: string)
+datatype SessionEntry = message(message: AgentMessage, id: string, parentId: Option<string>, timestamp: string) | thinking_level_change(thinkingLevel: string, id: string, parentId: Option<string>, timestamp: string) | model_change(provider: string, modelId: string, id: string, parentId: Option<string>, timestamp: string) | compaction(summary: string, firstKeptEntryId: string, tokensBefore: int, details: Option<Unknown>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string) | branch_summary(fromId: string, summary: string, details: Option<Unknown>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string) | custom(customType: string, data: Option<Unknown>, id: string, parentId: Option<string>, timestamp: string) | custom_message(customType: string, content: ArrayOf_Opaque_TextContent_or_ImageContent_Or_string, details: Option<Unknown>, display: bool, id: string, parentId: Option<string>, timestamp: string) | label_(targetId: string, label_: Option<string>, id: string, parentId: Option<string>, timestamp: string) | session_info(name: Option<string>, id: string, parentId: Option<string>, timestamp: string)
 
 datatype SessionMessageEntry = SessionMessageEntry(type_: string, message: AgentMessage, id: string, parentId: Option<string>, timestamp: string)
 
@@ -22,13 +24,13 @@ datatype ThinkingLevelChangeEntry = ThinkingLevelChangeEntry(type_: string, thin
 
 datatype ModelChangeEntry = ModelChangeEntry(type_: string, provider: string, modelId: string, id: string, parentId: Option<string>, timestamp: string)
 
-datatype CompactionEntry = CompactionEntry(type_: string, summary: string, firstKeptEntryId: string, tokensBefore: int, details: Option<int>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string)
+datatype CompactionEntry = CompactionEntry(type_: string, summary: string, firstKeptEntryId: string, tokensBefore: int, details: Option<Unknown>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string)
 
-datatype BranchSummaryEntry = BranchSummaryEntry(type_: string, fromId: string, summary: string, details: Option<int>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string)
+datatype BranchSummaryEntry = BranchSummaryEntry(type_: string, fromId: string, summary: string, details: Option<Unknown>, fromHook: Option<bool>, id: string, parentId: Option<string>, timestamp: string)
 
-datatype CustomEntry = CustomEntry(type_: string, customType: string, data: Option<int>, id: string, parentId: Option<string>, timestamp: string)
+datatype CustomEntry = CustomEntry(type_: string, customType: string, data: Option<Unknown>, id: string, parentId: Option<string>, timestamp: string)
 
-datatype CustomMessageEntry = CustomMessageEntry(type_: string, customType: string, content: ArrayOf_Opaque_TextContent_or_ImageContent_Or_string, details: Option<int>, display: bool, id: string, parentId: Option<string>, timestamp: string)
+datatype CustomMessageEntry = CustomMessageEntry(type_: string, customType: string, content: ArrayOf_Opaque_TextContent_or_ImageContent_Or_string, details: Option<Unknown>, display: bool, id: string, parentId: Option<string>, timestamp: string)
 
 datatype TextContent = TextContent(type_: string, text: string, textSignature: Option<string>)
 
