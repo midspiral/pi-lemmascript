@@ -2,11 +2,21 @@
 
 [![LemmaScript verified](https://img.shields.io/github/actions/workflow/status/midspiral/pi-lemmascript/lemmascript.yml?branch=lemmascript&label=LemmaScript%20verified)](https://github.com/midspiral/pi-lemmascript/actions/workflows/lemmascript.yml)
 
-Fork of **pi** (the [earendil-works](https://pi.dev) agent harness) applying [LemmaScript](https://github.com/midspiral/LemmaScript)'s Dafny backend to its context-compaction **cut-point selector**. Annotations are added **in-place** — function bodies and signatures are unchanged; everything goes through `//@` comments. [View as diff](https://github.com/midspiral/pi-lemmascript/compare/main..lemmascript).
+Fork of **pi** (the [earendil-works](https://pi.dev) agent harness) applying [LemmaScript](https://github.com/midspiral/LemmaScript) to its context-compaction **cut-point selector** — verified with **both backends**: Dafny, and Lean 4 (Velvet/Loom), from the same `//@`-annotated TypeScript. Annotations are added **in-place** — everything goes through `//@` comments; the one exception is a behavior-identical control-flow edit in `truncateTail` (the byte-limit exit moved from a `break` into the loop guard, validated by a 117,900-case differential fuzz against the original). [View as diff](https://github.com/midspiral/pi-lemmascript/compare/main..lemmascript).
 
 When the context window fills, pi compacts history: it picks a cut point and discards everything before it. A provider API rejects a message list whose retained prefix contains an **orphaned `toolResult`** — a tool result with no preceding tool call still in context. So the cut must never land such that the kept suffix *starts with* an orphaned tool result, and never *splits a tool-use/tool-result run*. We prove exactly those properties, in place, for both functions of the selector in [`packages/agent/src/harness/compaction/compaction.ts`](packages/agent/src/harness/compaction/compaction.ts), and in the shipped CLI's own copy [`packages/coding-agent/src/core/compaction/compaction.ts`](packages/coding-agent/src/core/compaction/compaction.ts).
 
-`check.sh dafny` → **8 verified, 0 errors** each. Both files prove the two no-orphan properties below and a *turn-split* property (when the cut splits a turn, the reported turn start is a real turn boundary at or before the cut). The case study drove six LemmaScript additions — string-union `declare-type`, faithful JS-`switch` lowering, an opaque fall-through type for unions that can't be discriminated, per-constructor destructor renaming for field-name collisions, `//@ extern` signature normalization, and string-union typing for local bindings — see [Notes for LemmaScript](#notes-for-lemmascript).
+`check.sh dafny` → **8 verified, 0 errors** per compaction file. `check.sh lean` → `lake build` green, **zero `sorry`**: the headline **no-orphan** theorem, the turn-split property, the changelog semver core, and both tool-output truncators also carry machine-checked Lean proofs. See [LS_LEAN.md](LS_LEAN.md) for the Lean backend retrospective.
+
+## Coverage
+
+| File | Properties | Dafny | Lean |
+|---|---|---|---|
+| `agent/.../compaction.ts` | no-orphan cut, in-range, turn-split | ✓ | ✓ |
+| `coding-agent/.../core/compaction/compaction.ts` | same (CLI's own copy) | ✓ | generated, not yet proven |
+| `coding-agent/.../utils/changelog.ts` | semver ordering trichotomy | ✓ | ✓ |
+| `coding-agent/.../core/tools/truncate.ts` | line/byte-limit bounds for head & tail truncation | ✓ | ✓ |
+| `coding-agent/.../core/tools/edit-diff.ts`, `ai/.../models.ts` | (see file annotations) | ✓ | — (`//@ backend dafny`) |
 
 ## What's Verified
 
@@ -29,25 +39,42 @@ Walks back from the end accumulating an (opaque) token estimate until it reaches
 
 Both carry an honest fallback caveat: when there are no valid cut points at all, the function returns `startIndex` unchanged, and the `ensures` disjoins on `|| firstKeptEntryIndex === startIndex` rather than pretending the degenerate fallback is safe.
 
+### `truncateHead` / `truncateTail` — [`truncate.ts`](packages/coding-agent/src/core/tools/truncate.ts)
+
+The shared tool-output truncators (line limit and byte limit, whichever hits first). Proven on both backends: the output never exceeds the line budget or the total line count, and when truncation was byte-driven (and no partial line was taken) the output is strictly under the line budget. `truncateTail`'s partial-last-line edge case is where Dafny's path-sensitive `break` reasoning and Lean's invariant-at-every-exit discipline diverge — the guard-fold edit noted above makes one loop shape both provers accept.
+
+## Running the verification
+
+Both backends regenerate their artifacts from the annotated TypeScript and check them; the generated files are committed and CI fails if they're stale.
+
+**Dafny** (needs Node ≥ 18 and [Dafny](https://github.com/dafny-lang/dafny) ≥ 4.x, with a LemmaScript clone as a sibling directory):
+
+```sh
+git clone https://github.com/midspiral/LemmaScript.git ../LemmaScript
+(cd ../LemmaScript/tools && npm ci)
+../LemmaScript/tools/check.sh dafny
+```
+
+**Lean** (additionally needs [elan](https://github.com/leanprover/elan) and the Loom/Velvet forks as siblings):
+
+```sh
+git clone https://github.com/namin/loom.git -b lemma ../loom
+git clone https://github.com/namin/velvet.git -b lemma ../velvet
+../LemmaScript/tools/check.sh lean   # regenerates *.lean and runs `lake build`
+```
+
+Per source file the Lean layout is `foo.types.lean` + `foo.def.lean` (generated) and `foo.proof.lean` (hand-written `prove_correct` tactics); files marked `//@ backend dafny` are skipped on the Lean pass. CI runs both backends ([`lemmascript.yml`](.github/workflows/lemmascript.yml)).
+
 ## Trust boundary
 
 These properties hold relative to assumptions made explicit in the annotations — nothing is hidden behind the proof:
 
 - **Type shadows.** The unreachable `@earendil-works/pi-ai` message graph is shadowed down to what the selector reads: `//@ declare-type Role = "user" | "assistant" | "toolResult" | …` and `//@ declare-type AgentMessage { role: Role }`. `SessionTreeEntry` itself auto-resolves; its `custom_message.content` (an unmodelable union) becomes an opaque type, present but uninspectable.
-- **Opaque helpers.** `estimateTokens` is `//@ extern` — uninterpreted. It reads message fields outside the shadow, so it *must* be opaque; the safety proofs don't depend on its value, only on which entries are messages.
+- **Opaque helpers.** `estimateTokens` is `//@ extern` — uninterpreted (Dafny: `function {:axiom}`; Lean: an `opaque` declaration). It reads message fields outside the shadow, so it *must* be opaque; the safety proofs don't depend on its value, only on which entries are messages. `truncate.ts` similarly treats `Buffer.byteLength` and the UTF-8-aware partial-line cut as contracted externs.
 - **Valid-input `requires`.** `0 <= startIndex`, `endIndex <= entries.length`, and — for the no-orphan result — an explicit ordering precondition: *within the range, a `toolResult` is always immediately preceded by a message (its tool-use turn).* This is the assumption verification forced into the open; if pi's session tree can ever violate it, the no-orphan guarantee is where that would surface.
 
 ## Not (yet) verified
 
 An **approximate-budget bound** (the kept suffix is close to `keepRecentTokens`) is *not* proven. Stating anything about retained tokens needs a recursive token-sum over a range, which can't be expressed as an inline `//@` spec, can't be a post-return-visible ghost local, and would require adding a helper to the production file (breaking in-place). It would need a spec-level ghost-function feature in LemmaScript. The bound also isn't clean — the forward snap can keep slightly *less* than the budget — so it's low value on its own.
 
-## Notes for LemmaScript
-
-This case study drove six additions to the LemmaScript toolchain (all upstream):
-
-- **String-union `declare-type`.** `//@ declare-type Role = "a" | "b"` now lowers to an enum `datatype`, so a shadow can introduce a discriminant enum for a type that's unreachable across an import.
-- **Faithful JS-`switch` lowering.** C-style fall-through (stacked `case` labels sharing one body) and `break`-as-switch-exit (a `break` nested in a `{ }` case block) now lower correctly to a Dafny `match` — neither of which `match` has natively.
-- **Opaque fall-through type.** A union LemmaScript can't model as a tagged union (no runtime test maps to a tag — e.g. an array element union of unreachable imports) becomes a single opaque `type Opaque_…(==)` rather than invalid raw-union Dafny. Sound by construction: the field is preserved (so distinct values stay distinct — unlike dropping it), and an opaque type has no constructor or tag predicate, so any attempt to *build or test* it fails to lower. Examples: [`opaqueUnion.ts`](https://github.com/midspiral/LemmaScript/blob/main/examples/opaqueUnion.ts).
-- **Shared-destructor collision.** Discriminated-union variants that share a field *name* with different types (`label.targetId: string` vs `leaf.targetId: string?`) get per-constructor-unique destructors, satisfying Dafny's rule that a shared destructor has one type. Safe because variant reads lower to positional match bindings. Example: [`sharedDestructorCollision.ts`](https://github.com/midspiral/LemmaScript/blob/main/examples/sharedDestructorCollision.ts).
-- **`//@ extern` signature normalization.** Extern signatures now resolve their parameter and return types through the normal type machinery, so a parameter typed by an unreachable import becomes `AgentMessage`, not `import("/abs/path").AgentMessage`.
-- **String-union typing for local bindings.** A `const` bound from a field that ts-morph widened to `string` (a string-union role reached across a shadowed import) keeps the string-union datatype LemmaScript resolved for the initializer — so `local === "lit"` lowers to the discriminant test, like the direct field-access form, rather than an ill-typed `string` compare. This is what lets `findTurnStartIndex` verify, underwriting the turn-split property.
+The CLI's own compaction copy has its Lean artifacts generated but no `prove_correct` yet; its properties are Dafny-verified, and the proofs would mirror the agent copy's.
