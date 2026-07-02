@@ -39,3 +39,8 @@ plans/
 .pi/hf-sessions/
 .pi/hf-sessions-backup/
 collect.sh
+
+# LemmaScript Lean backend — only build outputs; the lakefile, toolchain pins,
+# proofs, and generated .lean files must be tracked for CI (verify.yml
+# regenerates them and fails on diff or untracked generated files).
+.lake/

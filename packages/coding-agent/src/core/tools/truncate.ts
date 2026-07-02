@@ -8,6 +8,7 @@
  * Never returns partial lines (except bash tail truncation edge case).
  */
 
+//@ backend dafny
 export const DEFAULT_MAX_LINES = 2000;
 export const DEFAULT_MAX_BYTES = 50 * 1024; // 50KB
 export const GREP_MAX_LINE_LENGTH = 500; // Max chars per grep match line

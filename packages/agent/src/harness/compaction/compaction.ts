@@ -292,6 +292,7 @@ function findValidCutPoints(entries: SessionTreeEntry[], startIndex: number, end
 	//@ ensures forall(k: nat, k < \result.length ==> !isToolResultMessage(entries[\result[k]]))
 	const cutPoints: number[] = [];
 	for (let i = startIndex; i < endIndex; i++) {
+		//@ decreases (endIndex - i).toNat
 		//@ invariant startIndex <= i
 		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
 		//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
@@ -339,7 +340,9 @@ function findValidCutPoints(entries: SessionTreeEntry[], startIndex: number, end
 //@ ensures \result === -1 || (startIndex <= \result && \result <= entryIndex && isTurnStarter(entries[\result]))
 export function findTurnStartIndex(entries: SessionTreeEntry[], entryIndex: number, startIndex: number): number {
 	for (let i = entryIndex; i >= startIndex; i--) {
+		//@ decreases (i - startIndex + 1).toNat
 		//@ invariant i <= entryIndex
+		//@ done_with true
 		const entry = entries[i];
 		if (entry.type === "branch_summary" || entry.type === "custom_message") {
 			return i;
@@ -372,6 +375,7 @@ export function findCutPoint(
 	keepRecentTokens: number,
 ): CutPointResult {
 	//@ verify
+	//@ type c nat
 	//@ requires 0 <= startIndex
 	//@ requires endIndex <= entries.length
 	// Ordering assumption that verification forces explicit: within the active
@@ -396,17 +400,25 @@ export function findCutPoint(
 	let cutIndex = cutPoints[0];
 
 	for (let i = endIndex - 1; i >= startIndex; i--) {
+		//@ decreases (i - startIndex + 1).toNat
 		//@ invariant i < endIndex
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 		//@ invariant !isToolResultMessage(entries[cutIndex])
+		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
+		//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
+		//@ done_with true
 		const entry = entries[i];
 		if (entry.type !== "message") continue;
 		const messageTokens = estimateTokens(entry.message as AgentMessage);
 		accumulatedTokens += messageTokens;
 		if (accumulatedTokens >= keepRecentTokens) {
 			for (let c = 0; c < cutPoints.length; c++) {
+				//@ decreases cutPoints.length - c
 				//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 				//@ invariant !isToolResultMessage(entries[cutIndex])
+				//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
+				//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
+				//@ done_with true
 				if (cutPoints[c] >= i) {
 					cutIndex = cutPoints[c];
 					break;
@@ -416,8 +428,10 @@ export function findCutPoint(
 		}
 	}
 	while (cutIndex > startIndex) {
+		//@ decreases (cutIndex - startIndex).toNat
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 		//@ invariant !isToolResultMessage(entries[cutIndex])
+		//@ done_with true
 		const prevEntry = entries[cutIndex - 1];
 		if (prevEntry.type === "compaction") {
 			break;

@@ -2,6 +2,7 @@
  * Shared diff computation utilities for the edit and similar tools.
  */
 
+//@ backend dafny
 import * as Diff from "diff";
 import { constants } from "fs";
 import { access, readFile } from "fs/promises";

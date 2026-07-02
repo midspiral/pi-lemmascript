@@ -384,6 +384,7 @@ function findValidCutPoints(entries: SessionEntry[], startIndex: number, endInde
 export function findTurnStartIndex(entries: SessionEntry[], entryIndex: number, startIndex: number): number {
 	for (let i = entryIndex; i >= startIndex; i--) {
 		//@ invariant i <= entryIndex
+		//@ done_with true
 		const entry = entries[i];
 		// branch_summary and custom_message are user-role messages, can start a turn
 		if (entry.type === "branch_summary" || entry.type === "custom_message") {
@@ -457,6 +458,7 @@ export function findCutPoint(
 		//@ invariant i < endIndex
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 		//@ invariant !isToolResultMessage(entries[cutIndex])
+		//@ done_with true
 		const entry = entries[i];
 		if (entry.type !== "message") continue;
 
@@ -470,6 +472,7 @@ export function findCutPoint(
 			for (let c = 0; c < cutPoints.length; c++) {
 				//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 				//@ invariant !isToolResultMessage(entries[cutIndex])
+				//@ done_with true
 				if (cutPoints[c] >= i) {
 					cutIndex = cutPoints[c];
 					break;
@@ -483,6 +486,7 @@ export function findCutPoint(
 	while (cutIndex > startIndex) {
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 		//@ invariant !isToolResultMessage(entries[cutIndex])
+		//@ done_with true
 		const prevEntry = entries[cutIndex - 1];
 		// Stop at session header or compaction boundaries
 		if (prevEntry.type === "compaction") {

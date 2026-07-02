@@ -66,6 +66,7 @@ method findValidCutPoints(entries: seq<SessionTreeEntry>, startIndex: int, endIn
     invariant (startIndex <= i)
     invariant forall k: nat :: ((k < |cutPoints|) ==> ((startIndex <= cutPoints[k]) && (cutPoints[k] < endIndex)))
     invariant forall k: nat :: ((k < |cutPoints|) ==> !(isToolResultMessage(entries[cutPoints[k]])))
+    decreases (endIndex - i)
   {
     var entry := entries[i];
     match entry {
@@ -124,6 +125,7 @@ method findTurnStartIndex(entries: seq<SessionTreeEntry>, entryIndex: int, start
   var i := entryIndex;
   while (i >= startIndex)
     invariant (i <= entryIndex)
+    decreases ((i - startIndex) + 1)
   {
     var entry := entries[i];
     if (entry.branch_summary? || entry.custom_message?) {
@@ -164,6 +166,9 @@ method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: i
     invariant (startIndex <= cutIndex)
     invariant (cutIndex < endIndex)
     invariant !(isToolResultMessage(entries[cutIndex]))
+    invariant forall k: nat :: ((k < |cutPoints|) ==> ((startIndex <= cutPoints[k]) && (cutPoints[k] < endIndex)))
+    invariant forall k: nat :: ((k < |cutPoints|) ==> !(isToolResultMessage(entries[cutPoints[k]])))
+    decreases ((i - startIndex) + 1)
   {
     var entry := entries[i];
     match entry {
@@ -176,6 +181,9 @@ method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: i
             invariant (startIndex <= cutIndex)
             invariant (cutIndex < endIndex)
             invariant !(isToolResultMessage(entries[cutIndex]))
+            invariant forall k: nat :: ((k < |cutPoints|) ==> ((startIndex <= cutPoints[k]) && (cutPoints[k] < endIndex)))
+            invariant forall k: nat :: ((k < |cutPoints|) ==> !(isToolResultMessage(entries[cutPoints[k]])))
+            decreases (|cutPoints| - c)
           {
             if (cutPoints[c] >= i) {
               cutIndex := cutPoints[c];
@@ -194,6 +202,7 @@ method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: i
     invariant (startIndex <= cutIndex)
     invariant (cutIndex < endIndex)
     invariant !(isToolResultMessage(entries[cutIndex]))
+    decreases (cutIndex - startIndex)
   {
     var prevEntry := entries[(cutIndex - 1)];
     match prevEntry {

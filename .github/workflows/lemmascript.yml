@@ -11,3 +11,8 @@ jobs:
     uses: midspiral/LemmaScript/.github/workflows/verify.yml@main
     with:
       backend: dafny
+
+  verify-lean:
+    uses: midspiral/LemmaScript/.github/workflows/verify.yml@main
+    with:
+      backend: lean
