@@ -13,7 +13,7 @@ When the context window fills, pi compacts history: it picks a cut point and dis
 | File | Properties | Dafny | Lean |
 |---|---|---|---|
 | `agent/.../compaction.ts` | no-orphan cut, in-range, turn-split | ✓ | ✓ |
-| `coding-agent/.../core/compaction/compaction.ts` | same (CLI's own copy) | ✓ | generated, not yet proven |
+| `coding-agent/.../core/compaction/compaction.ts` | same (CLI's own copy) | ✓ | ✓ (`//@ lean-module`) |
 | `coding-agent/.../utils/changelog.ts` | semver ordering trichotomy | ✓ | ✓ |
 | `coding-agent/.../core/tools/truncate.ts` | line/byte-limit bounds for head & tail truncation | ✓ | ✓ |
 | `coding-agent/.../core/tools/edit-diff.ts`, `ai/.../models.ts` | (see file annotations) | ✓ | — (`//@ backend dafny`) |
@@ -77,4 +77,4 @@ These properties hold relative to assumptions made explicit in the annotations �
 
 An **approximate-budget bound** (the kept suffix is close to `keepRecentTokens`) is *not* proven. Stating anything about retained tokens needs a recursive token-sum over a range, which can't be expressed as an inline `//@` spec, can't be a post-return-visible ghost local, and would require adding a helper to the production file (breaking in-place). It would need a spec-level ghost-function feature in LemmaScript. The bound also isn't clean — the forward snap can keep slightly *less* than the budget — so it's low value on its own.
 
-The CLI's own compaction copy has its Lean artifacts generated but no `prove_correct` yet; its properties are Dafny-verified, and the proofs would mirror the agent copy's.
+The CLI's own compaction copy is now proven on **both** backends, same properties as the agent copy. It shares the agent copy's filename (`compaction.ts`), and Lean module names are flat/global, so it carries a `//@ lean-module compaction-cli` directive that re-bases its Lean modules (`compaction-cli.types`/`.def`/`.proof`) to avoid a collision — Dafny keeps the file basename.

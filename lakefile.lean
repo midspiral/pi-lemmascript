@@ -76,6 +76,15 @@ lean_lib CompactionAgent where
   roots := #[`«compaction.types», `«compaction.def», `«compaction.proof»]
   extraDepTargets := #[``downloadDependencies]
 
+-- CLI's own copy of the selector. Same basename (compaction.ts) as the agent
+-- copy above, so its Lean modules are re-based to `compaction-cli.*` via
+-- `//@ lean-module compaction-cli` to avoid a flat-namespace module collision.
+@[default_target]
+lean_lib CompactionCLI where
+  srcDir := "packages/coding-agent/src/core/compaction"
+  roots := #[`«compaction-cli.types», `«compaction-cli.def», `«compaction-cli.proof»]
+  extraDepTargets := #[``downloadDependencies]
+
 @[default_target]
 lean_lib Truncate where
   srcDir := "packages/coding-agent/src/core/tools"

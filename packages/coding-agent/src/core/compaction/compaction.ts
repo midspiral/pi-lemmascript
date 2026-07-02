@@ -25,6 +25,10 @@ import {
 	serializeConversation,
 } from "./utils.ts";
 
+// Distinct Lean module base: this file shares its basename (compaction.ts) with
+// the agent harness copy, and Lean module names are flat/global — without this
+// the two would collide. Dafny is unaffected. See LemmaScript SPEC_LEAN.md §1.4.
+//@ lean-module compaction-cli
 //@ declare-type Role = "bashExecution" | "custom" | "branchSummary" | "compactionSummary" | "user" | "assistant" | "toolResult"
 //@ declare-type AgentMessage { role: Role }
 
@@ -332,6 +336,7 @@ function isTurnStarter(entry: SessionEntry): boolean {
 function findValidCutPoints(entries: SessionEntry[], startIndex: number, endIndex: number): number[] {
 	const cutPoints: number[] = [];
 	for (let i = startIndex; i < endIndex; i++) {
+		//@ decreases (endIndex - i).toNat
 		//@ invariant startIndex <= i
 		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
 		//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
@@ -383,6 +388,7 @@ function findValidCutPoints(entries: SessionEntry[], startIndex: number, endInde
 //@ ensures \result === -1 || (startIndex <= \result && \result <= entryIndex && isTurnStarter(entries[\result]))
 export function findTurnStartIndex(entries: SessionEntry[], entryIndex: number, startIndex: number): number {
 	for (let i = entryIndex; i >= startIndex; i--) {
+		//@ decreases (i - startIndex + 1).toNat
 		//@ invariant i <= entryIndex
 		//@ done_with true
 		const entry = entries[i];
@@ -432,6 +438,7 @@ export function findCutPoint(
 	keepRecentTokens: number,
 ): CutPointResult {
 	//@ verify
+	//@ type c nat
 	//@ requires 0 <= startIndex
 	//@ requires endIndex <= entries.length
 	// Ordering assumption verification forces explicit: within the active range, a
@@ -455,9 +462,12 @@ export function findCutPoint(
 	let cutIndex = cutPoints[0]; // Default: keep from first message (not header)
 
 	for (let i = endIndex - 1; i >= startIndex; i--) {
+		//@ decreases (i - startIndex + 1).toNat
 		//@ invariant i < endIndex
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 		//@ invariant !isToolResultMessage(entries[cutIndex])
+		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
+		//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
 		//@ done_with true
 		const entry = entries[i];
 		if (entry.type !== "message") continue;
@@ -470,8 +480,11 @@ export function findCutPoint(
 		if (accumulatedTokens >= keepRecentTokens) {
 			// Find the closest valid cut point at or after this entry
 			for (let c = 0; c < cutPoints.length; c++) {
+				//@ decreases cutPoints.length - c
 				//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 				//@ invariant !isToolResultMessage(entries[cutIndex])
+				//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
+				//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
 				//@ done_with true
 				if (cutPoints[c] >= i) {
 					cutIndex = cutPoints[c];
@@ -484,6 +497,7 @@ export function findCutPoint(
 
 	// Scan backwards from cutIndex to include any non-message entries (bash, settings, etc.)
 	while (cutIndex > startIndex) {
+		//@ decreases (cutIndex - startIndex).toNat
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 		//@ invariant !isToolResultMessage(entries[cutIndex])
 		//@ done_with true
