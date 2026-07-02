@@ -8,7 +8,6 @@
  * Never returns partial lines (except bash tail truncation edge case).
  */
 
-//@ backend dafny
 export const DEFAULT_MAX_LINES = 2000;
 export const DEFAULT_MAX_BYTES = 50 * 1024; // 50KB
 export const GREP_MAX_LINE_LENGTH = 500; // Max chars per grep match line
@@ -136,10 +135,12 @@ export function truncateHead(content: string, options: TruncationOptions = {}): 
 	let truncatedBy: "lines" | "bytes" = "lines";
 
 	for (let i = 0; i < lines.length && i < maxLines; i++) {
+		//@ decreases (lines.length - i).toNat
 		//@ invariant 0 <= i && i <= lines.length
 		//@ invariant i == 0 || i <= maxLines
 		//@ invariant outputLinesArr.length == i
 		//@ invariant outputBytesCount <= maxBytes
+		//@ done_with true
 		const line = lines[i];
 		const lineBytes = Buffer.byteLength(line, "utf-8") + (i > 0 ? 1 : 0); // +1 for newline
 
@@ -217,11 +218,18 @@ export function truncateTail(content: string, options: TruncationOptions = {}): 
 	let truncatedBy: "lines" | "bytes" = "lines";
 	let lastLinePartial = false;
 
-	for (let i = lines.length - 1; i >= 0 && outputLinesArr.length < maxLines; i--) {
+	// The byte-limit exit lives in the loop guard (rather than a `break`) so the
+	// loop's exit facts are exactly its invariants plus the negated guard — the
+	// form both verification backends reason about directly.
+	for (let i = lines.length - 1; i >= 0 && outputLinesArr.length < maxLines && truncatedBy !== "bytes"; i--) {
+		//@ decreases (i + 1).toNat
 		//@ invariant i >= -1
-		//@ invariant outputLinesArr.length == lines.length - 1 - i
+		//@ invariant lastLinePartial ==> truncatedBy === "bytes"
+		//@ invariant (truncatedBy !== "bytes" && !lastLinePartial) ==> outputLinesArr.length == lines.length - 1 - i
+		//@ invariant truncatedBy === "bytes" ==> outputLinesArr.length <= lines.length
 		//@ invariant outputLinesArr.length == 0 || outputLinesArr.length <= maxLines
-		//@ invariant outputBytesCount <= maxBytes || outputBytesCount == 0
+		//@ invariant outputBytesCount <= maxBytes || outputBytesCount == 0 || lastLinePartial
+		//@ invariant (truncatedBy === "bytes" && !lastLinePartial) ==> outputLinesArr.length < maxLines
 		const line = lines[i];
 		const lineBytes = Buffer.byteLength(line, "utf-8") + (outputLinesArr.length > 0 ? 1 : 0); // +1 for newline
 
@@ -235,11 +243,10 @@ export function truncateTail(content: string, options: TruncationOptions = {}): 
 				outputBytesCount = Buffer.byteLength(truncatedLine, "utf-8");
 				lastLinePartial = true;
 			}
-			break;
+		} else {
+			outputLinesArr.unshift(line);
+			outputBytesCount += lineBytes;
 		}
-
-		outputLinesArr.unshift(line);
-		outputBytesCount += lineBytes;
 	}
 
 	// If we exited due to line limit

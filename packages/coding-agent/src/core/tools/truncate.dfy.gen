@@ -54,6 +54,7 @@ method truncateHead(content: string, options: TruncationOptions) returns (res: T
     invariant ((i == 0) || (i <= maxLines))
     invariant (|outputLinesArr| == i)
     invariant (outputBytesCount <= maxBytes)
+    decreases (|lines| - i)
   {
     var line := lines[i];
     var lineBytes := (Buffer_byteLength(line, "utf-8") + (if (i > 0) then 1 else 0));
@@ -92,11 +93,15 @@ method truncateTail(content: string, options: TruncationOptions) returns (res: T
   var truncatedBy := "lines";
   var lastLinePartial := false;
   var i := (|lines| - 1);
-  while ((i >= 0) && (|outputLinesArr| < maxLines))
+  while (((i >= 0) && (|outputLinesArr| < maxLines)) && (truncatedBy != "bytes"))
     invariant (i >= -1)
-    invariant (|outputLinesArr| == ((|lines| - 1) - i))
+    invariant (lastLinePartial ==> (truncatedBy == "bytes"))
+    invariant ((truncatedBy != "bytes") ==> !(lastLinePartial) ==> (|outputLinesArr| == ((|lines| - 1) - i)))
+    invariant ((truncatedBy == "bytes") ==> (|outputLinesArr| <= |lines|))
     invariant ((|outputLinesArr| == 0) || (|outputLinesArr| <= maxLines))
-    invariant ((outputBytesCount <= maxBytes) || (outputBytesCount == 0))
+    invariant (((outputBytesCount <= maxBytes) || (outputBytesCount == 0)) || lastLinePartial)
+    invariant ((truncatedBy == "bytes") ==> !(lastLinePartial) ==> (|outputLinesArr| < maxLines))
+    decreases (i + 1)
   {
     var line := lines[i];
     var lineBytes := (Buffer_byteLength(line, "utf-8") + (if (|outputLinesArr| > 0) then 1 else 0));
@@ -108,10 +113,10 @@ method truncateTail(content: string, options: TruncationOptions) returns (res: T
         outputBytesCount := Buffer_byteLength(truncatedLine, "utf-8");
         lastLinePartial := true;
       }
-      break;
+    } else {
+      outputLinesArr := ([line] + outputLinesArr);
+      outputBytesCount := (outputBytesCount + lineBytes);
     }
-    outputLinesArr := ([line] + outputLinesArr);
-    outputBytesCount := (outputBytesCount + lineBytes);
     i := (i - 1);
   }
   if ((|outputLinesArr| >= maxLines) && (outputBytesCount <= maxBytes)) {

@@ -75,3 +75,9 @@ lean_lib CompactionAgent where
   srcDir := "packages/agent/src/harness/compaction"
   roots := #[`«compaction.types», `«compaction.def», `«compaction.proof»]
   extraDepTargets := #[``downloadDependencies]
+
+@[default_target]
+lean_lib Truncate where
+  srcDir := "packages/coding-agent/src/core/tools"
+  roots := #[`«truncate.types», `«truncate.def», `«truncate.proof»]
+  extraDepTargets := #[``downloadDependencies]
