@@ -6,7 +6,7 @@ Fork of **pi** (the [earendil-works](https://pi.dev) agent harness) applying [Le
 
 When the context window fills, pi compacts history: it picks a cut point and discards everything before it. A provider API rejects a message list whose retained prefix contains an **orphaned `toolResult`** — a tool result with no preceding tool call still in context. So the cut must never land such that the kept suffix *starts with* an orphaned tool result, and never *splits a tool-use/tool-result run*. We prove exactly those properties, in place, for both functions of the selector in [`packages/agent/src/harness/compaction/compaction.ts`](packages/agent/src/harness/compaction/compaction.ts), and in the shipped CLI's own copy [`packages/coding-agent/src/core/compaction/compaction.ts`](packages/coding-agent/src/core/compaction/compaction.ts).
 
-`check.sh dafny` → **8 verified, 0 errors** per compaction file. `check.sh lean` → `lake build` green, **zero `sorry`**: the headline **no-orphan** theorem, the turn-split property, the changelog semver core, and both tool-output truncators also carry machine-checked Lean proofs. See [LS_LEAN.md](LS_LEAN.md) for the Lean backend retrospective.
+`check.sh dafny` → **8 verified, 0 errors** per compaction file. `check.sh lean` → `lake build` green, **zero `sorry`**: the headline **no-orphan** theorem, the turn-split property, the changelog semver core, and both tool-output truncators also carry machine-checked Lean proofs.
 
 ## Coverage
 
