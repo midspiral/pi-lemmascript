@@ -11,10 +11,8 @@ jobs:
     uses: midspiral/LemmaScript/.github/workflows/verify.yml@main
     with:
       backend: dafny
-      typecheck: false
 
   verify-lean:
     uses: midspiral/LemmaScript/.github/workflows/verify.yml@main
     with:
       backend: lean
-      typecheck: false
