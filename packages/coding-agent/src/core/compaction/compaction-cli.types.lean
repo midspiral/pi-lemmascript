@@ -3,9 +3,6 @@
 -/
 import LemmaScript
 
-/-- Opaque carrier for `unknown`-typed values (mirrors Dafny's `type Unknown(==, 0)`). -/
-opaque Unknown : Type
-
 inductive Role where
   | bashExecution : Role
   | custom : Role
