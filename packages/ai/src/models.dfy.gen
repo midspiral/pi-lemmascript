@@ -22,11 +22,11 @@ function SeqIndexOfFrom<T(==)>(s: seq<T>, x: T, from: nat): int
 
 function {:axiom} getSupportedThinkingLevels<TApi>(model: Model<TApi>): seq<ModelThinkingLevel>
 
-datatype ModelThinkingLevel = off | minimal | low | medium | high | xhigh
+datatype ModelThinkingLevel = off | minimal | low | medium | high | xhigh | max
 
 datatype Model<TApi> = Model(reasoning: bool)
 
-const EXTENDED_THINKING_LEVELS: seq<ModelThinkingLevel> := [ModelThinkingLevel.off, ModelThinkingLevel.minimal, ModelThinkingLevel.low, ModelThinkingLevel.medium, ModelThinkingLevel.high, ModelThinkingLevel.xhigh]
+const EXTENDED_THINKING_LEVELS: seq<ModelThinkingLevel> := [ModelThinkingLevel.off, ModelThinkingLevel.minimal, ModelThinkingLevel.low, ModelThinkingLevel.medium, ModelThinkingLevel.high, ModelThinkingLevel.xhigh, ModelThinkingLevel.max]
 
 method clampThinkingLevel<TApi>(model: Model<TApi>, level: ModelThinkingLevel) returns (res: ModelThinkingLevel)
   ensures ((res in getSupportedThinkingLevels(model)) || res.off?)

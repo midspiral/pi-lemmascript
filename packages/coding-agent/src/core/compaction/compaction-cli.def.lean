@@ -15,6 +15,19 @@ method isTurnStarter (entry : SessionEntry) return (res : Bool)
   do
     return Pure.isTurnStarter entry
 
+method isCutPointMessage (message : AgentMessage) return (res : Bool)
+  do
+    return Pure.isCutPointMessage message
+
+method isTurnStartMessage (message : AgentMessage) return (res : Bool)
+  do
+    return Pure.isTurnStartMessage message
+
+method isTurnStartEntry (entry : SessionEntry) return (res : Bool)
+  ensures res = false ∨ Pure.isTurnStarter entry
+  do
+    return Pure.isTurnStartEntry entry
+
 method findValidCutPoints (entries : Array SessionEntry) (startIndex : Int) (endIndex : Int) return (res : Array Int)
   require 0 ≤ startIndex
   require endIndex ≤ entries.size
@@ -30,26 +43,12 @@ method findValidCutPoints (entries : Array SessionEntry) (startIndex : Int) (end
       decreasing (endIndex - i).toNat
     do
       let entry := entries[i.toNat]!
-      if (match entry with | .message .. => true | _ => false) then
-        let _entry_message := (match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))
-        let role := _entry_message.role
-        if role = Role.bashExecution then
+      if (match entry with | .compaction .. => true | _ => false) then
+        i := i + 1
+      else
+        if (sessionEntryToContextMessages entry).any Pure.isCutPointMessage then
           cutPoints := Array.push cutPoints i
-        else if role = Role.custom then
-          cutPoints := Array.push cutPoints i
-        else
-          if role = Role.branchSummary then
-            cutPoints := Array.push cutPoints i
-          else if role = Role.compactionSummary then
-            cutPoints := Array.push cutPoints i
-          else
-            if role = Role.user then
-              cutPoints := Array.push cutPoints i
-            else if role = Role.assistant then
-              cutPoints := Array.push cutPoints i
-      if (match entry with | .branch_summary .. => true | _ => false) || (match entry with | .custom_message .. => true | _ => false) then
-        cutPoints := Array.push cutPoints i
-      i := i + 1
+        i := i + 1
     return cutPoints
 
 method findTurnStartIndex (entries : Array SessionEntry) (entryIndex : Int) (startIndex : Int) return (res : Int)
@@ -65,16 +64,10 @@ method findTurnStartIndex (entries : Array SessionEntry) (entryIndex : Int) (sta
       done_with True
       decreasing (i - startIndex + 1).toNat
     do
-      let entry := entries[i.toNat]!
-      if (match entry with | .branch_summary .. => true | _ => false) || (match entry with | .custom_message .. => true | _ => false) then
+      let _t0 ← isTurnStartEntry entries[i.toNat]!
+      if _t0 then
         _loopRet := i
         break
-      if (match entry with | .message .. => true | _ => false) then
-        let _entry_message := (match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))
-        let role := _entry_message.role
-        if role = Role.user || role = Role.bashExecution then
-          _loopRet := i
-          break
       i := i - 1
     return _loopRet
 
@@ -86,8 +79,8 @@ method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex 
   ensures (∀ j : Nat, res.firstKeptEntryIndex ≤ j → j < endIndex → Pure.isToolResultMessage entries[j]! → 0 ≤ j - 1 ∧ res.firstKeptEntryIndex ≤ j - 1 ∧ (match entries[j - 1]! with | .message .. => true | _ => false)) ∨ res.firstKeptEntryIndex = startIndex
   ensures res.isSplitTurn → 0 ≤ res.turnStartIndex ∧ res.turnStartIndex < entries.size ∧ startIndex ≤ res.turnStartIndex ∧ res.turnStartIndex ≤ res.firstKeptEntryIndex ∧ Pure.isTurnStarter entries[(res.turnStartIndex).toNat]!
   do
-    let _t0 ← findValidCutPoints entries startIndex endIndex
-    let mut cutPoints : Array Int := _t0
+    let _t1 ← findValidCutPoints entries startIndex endIndex
+    let mut cutPoints : Array Int := _t1
     if cutPoints.size = 0 then
       return { firstKeptEntryIndex := startIndex, turnStartIndex := -1, isSplitTurn := false }
     let mut accumulatedTokens : Int := 0
@@ -104,9 +97,10 @@ method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex 
       decreasing (i - startIndex + 1).toNat
     do
       let entry := entries[i.toNat]!
-      if (match entry with | .message .. => true | _ => false) then
-        let _entry_message := (match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))
-        let messageTokens := estimateTokens _entry_message
+      let messageTokens := ((sessionEntryToContextMessages entry).foldl (fun sum message => sum + estimateTokens message) 0)
+      if messageTokens = 0 then
+        i := i - 1
+      else
         accumulatedTokens := accumulatedTokens + messageTokens
         if accumulatedTokens ≥ keepRecentTokens then
           let mut c : Nat := 0
@@ -125,8 +119,6 @@ method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex 
             c := c + 1
           break
         i := i - 1
-      else
-        i := i - 1
     while cutIndex > startIndex
       invariant startIndex ≤ cutIndex
       invariant cutIndex < endIndex
@@ -135,14 +127,12 @@ method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex 
       decreasing (cutIndex - startIndex).toNat
     do
       let prevEntry := entries[(cutIndex - 1).toNat]!
-      if (match prevEntry with | .compaction .. => true | _ => false) then
+      if (match prevEntry with | .compaction .. => true | _ => false) || (sessionEntryToContextMessages prevEntry).size > 0 then
         break
-      else if (match prevEntry with | .message .. => true | _ => false) then
-        break
-      else
-        cutIndex := cutIndex - 1
+      cutIndex := cutIndex - 1
     let cutEntry := entries[cutIndex.toNat]!
-    let isUserMessage := (match cutEntry with | .message .. => true | _ => false) && ((match cutEntry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role = Role.user
-    let _t1 ← findTurnStartIndex entries cutIndex startIndex
-    let turnStartIndex := if isUserMessage then -1 else _t1
-    return { firstKeptEntryIndex := cutIndex, turnStartIndex := turnStartIndex, isSplitTurn := !(isUserMessage) && turnStartIndex ≠ -1 }
+    let _t2 ← isTurnStartEntry cutEntry
+    let startsTurn := _t2
+    let _t3 ← findTurnStartIndex entries cutIndex startIndex
+    let turnStartIndex := if startsTurn then -1 else _t3
+    return { firstKeptEntryIndex := cutIndex, turnStartIndex := turnStartIndex, isSplitTurn := !(startsTurn) && turnStartIndex ≠ -1 }

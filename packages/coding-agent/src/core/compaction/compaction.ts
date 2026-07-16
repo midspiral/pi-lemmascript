@@ -8,13 +8,13 @@
 import type { AgentMessage, StreamFn, ThinkingLevel } from "@earendil-works/pi-agent-core";
 import type { AssistantMessage, Context, Model, SimpleStreamOptions, Usage } from "@earendil-works/pi-ai/compat";
 import { completeSimple } from "@earendil-works/pi-ai/compat";
+import { convertToLlm } from "../messages.ts";
 import {
-	convertToLlm,
-	createBranchSummaryMessage,
-	createCompactionSummaryMessage,
-	createCustomMessage,
-} from "../messages.ts";
-import { buildSessionContext, type CompactionEntry, type SessionEntry } from "../session-manager.ts";
+	buildSessionContext,
+	type CompactionEntry,
+	type SessionEntry,
+	sessionEntryToContextMessages,
+} from "../session-manager.ts";
 import {
 	computeFileLists,
 	createFileOps,
@@ -31,6 +31,24 @@ import {
 //@ lean-module compaction-cli
 //@ declare-type Role = "bashExecution" | "custom" | "branchSummary" | "compactionSummary" | "user" | "assistant" | "toolResult"
 //@ declare-type AgentMessage { role: Role }
+// `sessionEntryToContextMessages` (cross-file) constructs messages via these three
+// helpers. Lifting them transitively drags in signatures with no Dafny image —
+// `createCustomMessage`'s `content: string | (TextContent | ImageContent)[]` union,
+// and the `*SummaryMessage` return types that aren't declared in this module. A
+// same-file `//@ extern` wins over the transitively-lifted signature (externs dedup
+// by name), so we model them against the declared `AgentMessage`.
+//@ extern
+declare function createCustomMessage(
+	customType: string,
+	content: unknown,
+	display: boolean,
+	details: unknown,
+	timestamp: string,
+): AgentMessage;
+//@ extern
+declare function createBranchSummaryMessage(summary: string, fromId: string, timestamp: string): AgentMessage;
+//@ extern
+declare function createCompactionSummaryMessage(summary: string, tokensBefore: number, timestamp: string): AgentMessage;
 
 // ============================================================================
 // File Operation Tracking
@@ -83,27 +101,11 @@ function extractFileOperations(
  * Extract AgentMessage from an entry if it produces one.
  * Returns undefined for entries that don't contribute to LLM context.
  */
-function getMessageFromEntry(entry: SessionEntry): AgentMessage | undefined {
-	if (entry.type === "message") {
-		return entry.message;
-	}
-	if (entry.type === "custom_message") {
-		return createCustomMessage(entry.customType, entry.content, entry.display, entry.details, entry.timestamp);
-	}
-	if (entry.type === "branch_summary") {
-		return createBranchSummaryMessage(entry.summary, entry.fromId, entry.timestamp);
-	}
-	if (entry.type === "compaction") {
-		return createCompactionSummaryMessage(entry.summary, entry.tokensBefore, entry.timestamp);
-	}
-	return undefined;
-}
-
 function getMessageFromEntryForCompaction(entry: SessionEntry): AgentMessage | undefined {
 	if (entry.type === "compaction") {
 		return undefined;
 	}
-	return getMessageFromEntry(entry);
+	return sessionEntryToContextMessages(entry)[0];
 }
 
 /** Result from compact() - SessionManager adds uuid/parentUuid when saving */
@@ -310,23 +312,67 @@ function isToolResultMessage(entry: SessionEntry): boolean {
 	return entry.type === "message" && entry.message.role === "toolResult";
 }
 
-// A turn boundary: a user/bashExecution message, or a branch-summary/custom-message entry.
+// A turn boundary: a branch-summary/custom-message entry, or a message entry whose
+// message is itself a turn-starter. Mirrors main's isTurnStartEntry at the entry.type
+// level: a message entry's role may be "custom" (the v2->v3 hookMessage remap in
+// session-manager), so this must match isTurnStartMessage rather than a narrower
+// user/bashExecution-only set.
 // biome-ignore lint/correctness/noUnusedVariables: spec-only predicate referenced in //@ contracts
 function isTurnStarter(entry: SessionEntry): boolean {
 	//@ verify
 	return (
 		entry.type === "branch_summary" ||
 		entry.type === "custom_message" ||
-		(entry.type === "message" && (entry.message.role === "user" || entry.message.role === "bashExecution"))
+		(entry.type === "message" && isTurnStartMessage(entry.message))
 	);
 }
 
+function isCutPointMessage(message: AgentMessage): boolean {
+	//@ verify
+	switch (message.role) {
+		case "user":
+		case "assistant":
+		case "bashExecution":
+		case "custom":
+		case "branchSummary":
+		case "compactionSummary":
+			return true;
+		case "toolResult":
+			return false;
+	}
+	return false;
+}
+
+function isTurnStartMessage(message: AgentMessage): boolean {
+	//@ verify
+	switch (message.role) {
+		case "user":
+		case "bashExecution":
+		case "custom":
+		case "branchSummary":
+		case "compactionSummary":
+			return true;
+		case "assistant":
+		case "toolResult":
+			return false;
+	}
+	return false;
+}
+
+function isTurnStartEntry(entry: SessionEntry): boolean {
+	//@ verify
+	//@ ensures \result === false || isTurnStarter(entry)
+	if (entry.type === "compaction") {
+		return false;
+	}
+	return sessionEntryToContextMessages(entry).some(isTurnStartMessage);
+}
+
 /**
- * Find valid cut points: indices of user, assistant, custom, or bashExecution messages.
+ * Find valid cut points: indices of context-visible user-like or assistant messages.
  * Never cut at tool results (they must follow their tool call).
  * When we cut at an assistant message with tool calls, its tool results follow it
  * and will be kept.
- * BashExecutionMessage is treated like a user message (user-initiated context).
  */
 //@ verify
 //@ requires 0 <= startIndex
@@ -341,36 +387,10 @@ function findValidCutPoints(entries: SessionEntry[], startIndex: number, endInde
 		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
 		//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
 		const entry = entries[i];
-		switch (entry.type) {
-			case "message": {
-				const role = entry.message.role;
-				switch (role) {
-					case "bashExecution":
-					case "custom":
-					case "branchSummary":
-					case "compactionSummary":
-					case "user":
-					case "assistant":
-						cutPoints.push(i);
-						break;
-					case "toolResult":
-						break;
-				}
-				break;
-			}
-			case "thinking_level_change":
-			case "model_change":
-			case "compaction":
-			case "branch_summary":
-			case "custom":
-			case "custom_message":
-			case "label":
-			case "session_info":
-				break;
+		if (entry.type === "compaction") {
+			continue;
 		}
-
-		// branch_summary and custom_message are user-role messages, valid cut points
-		if (entry.type === "branch_summary" || entry.type === "custom_message") {
+		if (sessionEntryToContextMessages(entry).some(isCutPointMessage)) {
 			cutPoints.push(i);
 		}
 	}
@@ -378,9 +398,8 @@ function findValidCutPoints(entries: SessionEntry[], startIndex: number, endInde
 }
 
 /**
- * Find the user message (or bashExecution) that starts the turn containing the given entry index.
+ * Find the context-visible user-role message that starts the turn containing the given entry index.
  * Returns -1 if no turn start found before the index.
- * BashExecutionMessage is treated like a user message for turn boundaries.
  */
 //@ verify
 //@ requires 0 <= startIndex
@@ -391,16 +410,8 @@ export function findTurnStartIndex(entries: SessionEntry[], entryIndex: number, 
 		//@ decreases (i - startIndex + 1).toNat
 		//@ invariant i <= entryIndex
 		//@ done_with true
-		const entry = entries[i];
-		// branch_summary and custom_message are user-role messages, can start a turn
-		if (entry.type === "branch_summary" || entry.type === "custom_message") {
+		if (isTurnStartEntry(entries[i])) {
 			return i;
-		}
-		if (entry.type === "message") {
-			const role = entry.message.role;
-			if (role === "user" || role === "bashExecution") {
-				return i;
-			}
 		}
 	}
 	return -1;
@@ -470,10 +481,11 @@ export function findCutPoint(
 		//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
 		//@ done_with true
 		const entry = entries[i];
-		if (entry.type !== "message") continue;
-
-		// Estimate this message's size
-		const messageTokens = estimateTokens(entry.message);
+		const messageTokens = sessionEntryToContextMessages(entry).reduce(
+			(sum, message) => sum + estimateTokens(message),
+			0,
+		);
+		if (messageTokens === 0) continue;
 		accumulatedTokens += messageTokens;
 
 		// Check if we've exceeded the budget
@@ -495,34 +507,29 @@ export function findCutPoint(
 		}
 	}
 
-	// Scan backwards from cutIndex to include any non-message entries (bash, settings, etc.)
+	// Scan backwards from cutIndex to include adjacent metadata entries that do not affect context.
 	while (cutIndex > startIndex) {
 		//@ decreases (cutIndex - startIndex).toNat
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 		//@ invariant !isToolResultMessage(entries[cutIndex])
 		//@ done_with true
 		const prevEntry = entries[cutIndex - 1];
-		// Stop at session header or compaction boundaries
-		if (prevEntry.type === "compaction") {
+		// Stop at compaction boundaries or context-visible entries.
+		if (prevEntry.type === "compaction" || sessionEntryToContextMessages(prevEntry).length > 0) {
 			break;
 		}
-		if (prevEntry.type === "message") {
-			// Stop if we hit any message
-			break;
-		}
-		// Include this non-message entry (bash, settings change, etc.)
 		cutIndex--;
 	}
 
 	// Determine if this is a split turn
 	const cutEntry = entries[cutIndex];
-	const isUserMessage = cutEntry.type === "message" && cutEntry.message.role === "user";
-	const turnStartIndex = isUserMessage ? -1 : findTurnStartIndex(entries, cutIndex, startIndex);
+	const startsTurn = isTurnStartEntry(cutEntry);
+	const turnStartIndex = startsTurn ? -1 : findTurnStartIndex(entries, cutIndex, startIndex);
 
 	return {
 		firstKeptEntryIndex: cutIndex,
 		turnStartIndex,
-		isSplitTurn: !isUserMessage && turnStartIndex !== -1,
+		isSplitTurn: !startsTurn && turnStartIndex !== -1,
 	};
 }
 
@@ -851,14 +858,13 @@ export async function compact(
 		settings,
 	} = preparation;
 
-	// Generate summaries (can be parallel if both needed) and merge into one
+	// Generate summaries and merge into one
 	let summary: string;
 
 	if (isSplitTurn && turnPrefixMessages.length > 0) {
-		// Generate both summaries in parallel
-		const [historyResult, turnPrefixResult] = await Promise.all([
+		const historyResult =
 			messagesToSummarize.length > 0
-				? generateSummary(
+				? await generateSummary(
 						messagesToSummarize,
 						model,
 						settings.reserveTokens,
@@ -871,19 +877,18 @@ export async function compact(
 						streamFn,
 						env,
 					)
-				: Promise.resolve("No prior history."),
-			generateTurnPrefixSummary(
-				turnPrefixMessages,
-				model,
-				settings.reserveTokens,
-				apiKey,
-				headers,
-				env,
-				signal,
-				thinkingLevel,
-				streamFn,
-			),
-		]);
+				: "No prior history.";
+		const turnPrefixResult = await generateTurnPrefixSummary(
+			turnPrefixMessages,
+			model,
+			settings.reserveTokens,
+			apiKey,
+			headers,
+			env,
+			signal,
+			thinkingLevel,
+			streamFn,
+		);
 		// Merge into single summary
 		summary = `${historyResult}\n\n---\n\n**Turn Context (split turn):**\n\n${turnPrefixResult}`;
 	} else {

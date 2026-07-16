@@ -23,7 +23,7 @@ structure TruncationOptions where
 deriving Repr, Inhabited, DecidableEq
 
 opaque Buffer_byteLength (s : String) (enc : String) : Int
-@[grind] axiom Buffer_byteLength_spec (s : String) (enc : String) : Buffer_byteLength s enc ≥ 0
+@[grind] axiom Buffer_byteLength_spec (s : String) (enc : String) : (Buffer_byteLength s enc ≥ 0)
 
 opaque splitLinesForCounting (content : String) : Array String
 @[grind] axiom splitLinesForCounting_spec (content : String) : (content.length > 0 → (splitLinesForCounting content).size > 0)

@@ -142,14 +142,64 @@ structure SessionInfoEntry where
   timestamp : String
 deriving Repr, Inhabited, DecidableEq
 
+opaque createCustomMessage (customType : String) (content : Unknown) (display : Bool) (details : Unknown) (timestamp : String) : AgentMessage
+
+opaque createBranchSummaryMessage (summary : String) (fromId : String) (timestamp : String) : AgentMessage
+
+opaque createCompactionSummaryMessage (summary : String) (tokensBefore : Int) (timestamp : String) : AgentMessage
+
 opaque estimateTokens (message : AgentMessage) : Int
+
+opaque sessionEntryToContextMessages (entry : SessionEntry) : Array AgentMessage
+@[grind] axiom sessionEntryToContextMessages_spec (entry : SessionEntry) : ((match entry with | .message .. => true | _ => false) → (sessionEntryToContextMessages entry).size ≥ 1) ∧ (∀ k : Nat, k < (sessionEntryToContextMessages entry).size → (match entry with | .message .. => false | _ => true) ∨ ((sessionEntryToContextMessages entry)[k]!).role = ((match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role) ∧ (∀ k : Nat, k < (sessionEntryToContextMessages entry).size → (match entry with | .custom_message .. => false | _ => true) ∨ ((sessionEntryToContextMessages entry)[k]!).role = Role.custom) ∧ (∀ k : Nat, k < (sessionEntryToContextMessages entry).size → (match entry with | .branch_summary .. => false | _ => true) ∨ ((sessionEntryToContextMessages entry)[k]!).role = Role.branchSummary) ∧ ((match entry with | .message .. => true | _ => false) ∨ (match entry with | .custom_message .. => true | _ => false) ∨ (match entry with | .branch_summary .. => true | _ => false) ∨ (match entry with | .compaction .. => true | _ => false) ∨ (sessionEntryToContextMessages entry).size = 0)
 
 namespace Pure
 
 def isToolResultMessage (entry : SessionEntry) : Bool :=
   (match entry with | .message .. => true | _ => false) && ((match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role = Role.toolResult
 
+def isTurnStartMessage (message : AgentMessage) : Bool :=
+  match message.role with
+  | .user =>
+    true
+  | .bashExecution =>
+    true
+  | .custom =>
+    true
+  | .branchSummary =>
+    true
+  | .compactionSummary =>
+    true
+  | .assistant =>
+    false
+  | .toolResult =>
+    false
+
 def isTurnStarter (entry : SessionEntry) : Bool :=
-  (match entry with | .branch_summary .. => true | _ => false) || (match entry with | .custom_message .. => true | _ => false) || (match entry with | .message .. => true | _ => false) && (((match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role = Role.user || ((match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role = Role.bashExecution)
+  (match entry with | .branch_summary .. => true | _ => false) || (match entry with | .custom_message .. => true | _ => false) || (match entry with | .message .. => true | _ => false) && isTurnStartMessage (match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))
+
+def isCutPointMessage (message : AgentMessage) : Bool :=
+  match message.role with
+  | .user =>
+    true
+  | .assistant =>
+    true
+  | .bashExecution =>
+    true
+  | .custom =>
+    true
+  | .branchSummary =>
+    true
+  | .compactionSummary =>
+    true
+  | .toolResult =>
+    false
+
+def isTurnStartEntry (entry : SessionEntry) : Bool :=
+  match entry with
+  | .compaction _entry_summary _entry_firstKeptEntryId _entry_tokensBefore _entry_details _entry_fromHook _entry_id _entry_parentId _entry_timestamp =>
+    false
+  | _ =>
+    (sessionEntryToContextMessages entry).any Pure.isTurnStartMessage
 
 end Pure
