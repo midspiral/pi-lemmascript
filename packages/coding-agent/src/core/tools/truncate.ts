@@ -45,11 +45,11 @@ export interface TruncationOptions {
 }
 
 //@ extern Buffer.byteLength
-//@ ensures \result >= 0
+//@ ensures $result >= 0
 declare function __bufferByteLength(s: string, enc: string): number;
 
 //@ extern
-//@ ensures content.length > 0 ==> \result.length > 0
+//@ ensures implies(content.length > 0, $result.length > 0)
 function splitLinesForCounting(content: string): string[] {
 	if (content.length === 0) {
 		return [];
@@ -83,9 +83,9 @@ export function formatSize(bytes: number): string {
  */
 //@ verify
 //@ requires content.length > 0
-//@ ensures \result.maxLines >= 0 ==> \result.outputLines <= \result.maxLines
-//@ ensures \result.outputLines <= \result.totalLines
-//@ ensures (\result.truncatedBy == "bytes" && !\result.firstLineExceedsLimit) ==> \result.outputLines < \result.maxLines
+//@ ensures implies($result.maxLines >= 0, $result.outputLines <= $result.maxLines)
+//@ ensures $result.outputLines <= $result.totalLines
+//@ ensures implies($result.truncatedBy === "bytes" && !$result.firstLineExceedsLimit, $result.outputLines < $result.maxLines)
 export function truncateHead(content: string, options: TruncationOptions = {}): TruncationResult {
 	const maxLines = options.maxLines ?? DEFAULT_MAX_LINES;
 	const maxBytes = options.maxBytes ?? DEFAULT_MAX_BYTES;
@@ -184,9 +184,9 @@ export function truncateHead(content: string, options: TruncationOptions = {}): 
  */
 //@ verify
 //@ requires content.length > 0
-//@ ensures \result.maxLines >= 0 ==> \result.outputLines <= \result.maxLines
-//@ ensures \result.outputLines <= \result.totalLines
-//@ ensures (\result.maxBytes >= 0 && \result.truncatedBy == "bytes" && !\result.lastLinePartial) ==> \result.outputLines < \result.maxLines
+//@ ensures implies($result.maxLines >= 0, $result.outputLines <= $result.maxLines)
+//@ ensures $result.outputLines <= $result.totalLines
+//@ ensures implies($result.maxBytes >= 0 && $result.truncatedBy === "bytes" && !$result.lastLinePartial, $result.outputLines < $result.maxLines)
 export function truncateTail(content: string, options: TruncationOptions = {}): TruncationResult {
 	const maxLines = options.maxLines ?? DEFAULT_MAX_LINES;
 	const maxBytes = options.maxBytes ?? DEFAULT_MAX_BYTES;
@@ -224,12 +224,12 @@ export function truncateTail(content: string, options: TruncationOptions = {}): 
 	for (let i = lines.length - 1; i >= 0 && outputLinesArr.length < maxLines && truncatedBy !== "bytes"; i--) {
 		//@ decreases (i + 1).toNat
 		//@ invariant i >= -1
-		//@ invariant lastLinePartial ==> truncatedBy === "bytes"
-		//@ invariant (truncatedBy !== "bytes" && !lastLinePartial) ==> outputLinesArr.length == lines.length - 1 - i
-		//@ invariant truncatedBy === "bytes" ==> outputLinesArr.length <= lines.length
+		//@ invariant implies(lastLinePartial, truncatedBy === "bytes")
+		//@ invariant implies(truncatedBy !== "bytes" && !lastLinePartial, outputLinesArr.length === lines.length - 1 - i)
+		//@ invariant implies(truncatedBy === "bytes", outputLinesArr.length <= lines.length)
 		//@ invariant outputLinesArr.length == 0 || outputLinesArr.length <= maxLines
 		//@ invariant outputBytesCount <= maxBytes || outputBytesCount == 0 || lastLinePartial
-		//@ invariant (truncatedBy === "bytes" && !lastLinePartial) ==> outputLinesArr.length < maxLines
+		//@ invariant implies(truncatedBy === "bytes" && !lastLinePartial, outputLinesArr.length < maxLines)
 		const line = lines[i];
 		const lineBytes = Buffer.byteLength(line, "utf-8") + (outputLinesArr.length > 0 ? 1 : 0); // +1 for newline
 

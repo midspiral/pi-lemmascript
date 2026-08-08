@@ -381,11 +381,11 @@ export function sessionEntryToContextMessages(entry: SessionEntry): AgentMessage
 	// message's role to the entry kind, so verified callers can bridge specs stated on
 	// `entry.type` (isToolResultMessage, isTurnStarter) to the `.some(...)` checks over
 	// these messages. Each clause is true of the body below.
-	//@ ensures entry.type === "message" ==> \result.length >= 1
-	//@ ensures forall(k: nat, k < \result.length ==> (entry.type !== "message" || \result[k].role === entry.message.role))
-	//@ ensures forall(k: nat, k < \result.length ==> (entry.type !== "custom_message" || \result[k].role === "custom"))
-	//@ ensures forall(k: nat, k < \result.length ==> (entry.type !== "branch_summary" || \result[k].role === "branchSummary"))
-	//@ ensures (entry.type === "message" || entry.type === "custom_message" || entry.type === "branch_summary" || entry.type === "compaction") || \result.length === 0
+	//@ ensures implies(entry.type === "message", $result.length >= 1)
+	//@ ensures forall((k: nat) => implies(k < $result.length, entry.type !== "message" || $result[k].role === entry.message.role))
+	//@ ensures forall((k: nat) => implies(k < $result.length, entry.type !== "custom_message" || $result[k].role === "custom"))
+	//@ ensures forall((k: nat) => implies(k < $result.length, entry.type !== "branch_summary" || $result[k].role === "branchSummary"))
+	//@ ensures entry.type === "message" || entry.type === "custom_message" || entry.type === "branch_summary" || entry.type === "compaction" || $result.length === 0
 	if (entry.type === "message") {
 		const message = entry.message;
 		// Session files are parsed without validation; old versions, forks, or

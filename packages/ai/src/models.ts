@@ -676,14 +676,14 @@ export function getSupportedThinkingLevels<TApi extends Api>(model: Model<TApi>)
 }
 
 //@ verify
-//@ ensures getSupportedThinkingLevels(model).includes(\result) || \result == "off"
-//@ ensures getSupportedThinkingLevels(model).includes(level) ==> \result == level
+//@ ensures getSupportedThinkingLevels(model).includes($result) || $result === "off"
+//@ ensures implies(getSupportedThinkingLevels(model).includes(level), $result === level)
 // Nearest-supported, preferring higher: nothing supported lies strictly between the
 // request and the result, and the result drops below the request only when nothing
 // at-or-above it is available.
-//@ ensures (getSupportedThinkingLevels(model).includes(\result) && EXTENDED_THINKING_LEVELS.indexOf(level) <= EXTENDED_THINKING_LEVELS.indexOf(\result)) ==> forall(k, EXTENDED_THINKING_LEVELS.indexOf(level) <= k && k < EXTENDED_THINKING_LEVELS.indexOf(\result) ==> !getSupportedThinkingLevels(model).includes(EXTENDED_THINKING_LEVELS[k]))
-//@ ensures (getSupportedThinkingLevels(model).includes(\result) && EXTENDED_THINKING_LEVELS.indexOf(\result) < EXTENDED_THINKING_LEVELS.indexOf(level)) ==> forall(k, EXTENDED_THINKING_LEVELS.indexOf(level) <= k && k < EXTENDED_THINKING_LEVELS.length ==> !getSupportedThinkingLevels(model).includes(EXTENDED_THINKING_LEVELS[k]))
-//@ ensures (getSupportedThinkingLevels(model).includes(\result) && EXTENDED_THINKING_LEVELS.indexOf(\result) < EXTENDED_THINKING_LEVELS.indexOf(level)) ==> forall(k, EXTENDED_THINKING_LEVELS.indexOf(\result) < k && k < EXTENDED_THINKING_LEVELS.indexOf(level) ==> !getSupportedThinkingLevels(model).includes(EXTENDED_THINKING_LEVELS[k]))
+//@ ensures implies(getSupportedThinkingLevels(model).includes($result) && EXTENDED_THINKING_LEVELS.indexOf(level) <= EXTENDED_THINKING_LEVELS.indexOf($result), forall(k => implies(EXTENDED_THINKING_LEVELS.indexOf(level) <= k && k < EXTENDED_THINKING_LEVELS.indexOf($result), !getSupportedThinkingLevels(model).includes(EXTENDED_THINKING_LEVELS[k]))))
+//@ ensures implies(getSupportedThinkingLevels(model).includes($result) && EXTENDED_THINKING_LEVELS.indexOf($result) < EXTENDED_THINKING_LEVELS.indexOf(level), forall(k => implies(EXTENDED_THINKING_LEVELS.indexOf(level) <= k && k < EXTENDED_THINKING_LEVELS.length, !getSupportedThinkingLevels(model).includes(EXTENDED_THINKING_LEVELS[k]))))
+//@ ensures implies(getSupportedThinkingLevels(model).includes($result) && EXTENDED_THINKING_LEVELS.indexOf($result) < EXTENDED_THINKING_LEVELS.indexOf(level), forall(k => implies(EXTENDED_THINKING_LEVELS.indexOf($result) < k && k < EXTENDED_THINKING_LEVELS.indexOf(level), !getSupportedThinkingLevels(model).includes(EXTENDED_THINKING_LEVELS[k]))))
 export function clampThinkingLevel<TApi extends Api>(
 	model: Model<TApi>,
 	level: ModelThinkingLevel,
@@ -696,14 +696,14 @@ export function clampThinkingLevel<TApi extends Api>(
 
 	for (let i = requestedIndex; i < EXTENDED_THINKING_LEVELS.length; i++) {
 		//@ invariant requestedIndex <= i && i <= EXTENDED_THINKING_LEVELS.length
-		//@ invariant forall(k, requestedIndex <= k && k < i ==> !availableLevels.includes(EXTENDED_THINKING_LEVELS[k]))
+		//@ invariant forall(k => implies(requestedIndex <= k && k < i, !availableLevels.includes(EXTENDED_THINKING_LEVELS[k])))
 		const candidate = EXTENDED_THINKING_LEVELS[i];
 		if (availableLevels.includes(candidate)) return candidate;
 	}
 	for (let i = requestedIndex - 1; i >= 0; i--) {
 		//@ invariant -1 <= i && i < requestedIndex
-		//@ invariant forall(k, i < k && k < requestedIndex ==> !availableLevels.includes(EXTENDED_THINKING_LEVELS[k]))
-		//@ invariant forall(k, requestedIndex <= k && k < EXTENDED_THINKING_LEVELS.length ==> !availableLevels.includes(EXTENDED_THINKING_LEVELS[k]))
+		//@ invariant forall(k => implies(i < k && k < requestedIndex, !availableLevels.includes(EXTENDED_THINKING_LEVELS[k])))
+		//@ invariant forall(k => implies(requestedIndex <= k && k < EXTENDED_THINKING_LEVELS.length, !availableLevels.includes(EXTENDED_THINKING_LEVELS[k])))
 		const candidate = EXTENDED_THINKING_LEVELS[i];
 		if (availableLevels.includes(candidate)) return candidate;
 	}

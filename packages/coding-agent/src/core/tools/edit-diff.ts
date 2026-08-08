@@ -109,9 +109,9 @@ function getReplacementLineRange(lines: LineSpan[], replacement: TextReplacement
 }
 
 //@ verify
-//@ requires forall(k: nat, k < replacements.length ==> replacements[k].matchLength >= 0)
-//@ requires forall(k: nat, k < replacements.length ==> 0 <= replacements[k].matchIndex - offset && replacements[k].matchIndex - offset + replacements[k].matchLength <= content.length)
-//@ requires forall(k: nat, k + 1 < replacements.length ==> replacements[k].matchIndex + replacements[k].matchLength <= replacements[k + 1].matchIndex)
+//@ requires forall((k: nat) => implies(k < replacements.length, replacements[k].matchLength >= 0))
+//@ requires forall((k: nat) => implies(k < replacements.length, 0 <= replacements[k].matchIndex - offset && replacements[k].matchIndex - offset + replacements[k].matchLength <= content.length))
+//@ requires forall((k: nat) => implies(k + 1 < replacements.length, replacements[k].matchIndex + replacements[k].matchLength <= replacements[k + 1].matchIndex))
 function applyReplacements(content: string, replacements: TextReplacement[], offset = 0): string {
 	let result = content;
 	for (let i = replacements.length - 1; i >= 0; i--) {

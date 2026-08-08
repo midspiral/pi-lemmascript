@@ -288,14 +288,14 @@ function findValidCutPoints(entries: SessionTreeEntry[], startIndex: number, end
 	//@ verify
 	//@ requires 0 <= startIndex
 	//@ requires endIndex <= entries.length
-	//@ ensures forall(k: nat, k < \result.length ==> startIndex <= \result[k] && \result[k] < endIndex)
-	//@ ensures forall(k: nat, k < \result.length ==> !isToolResultMessage(entries[\result[k]]))
+	//@ ensures forall((k: nat) => implies(k < $result.length, startIndex <= $result[k] && $result[k] < endIndex))
+	//@ ensures forall((k: nat) => implies(k < $result.length, !isToolResultMessage(entries[$result[k]])))
 	const cutPoints: number[] = [];
 	for (let i = startIndex; i < endIndex; i++) {
 		//@ decreases (endIndex - i).toNat
 		//@ invariant startIndex <= i
-		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
-		//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
+		//@ invariant forall((k: nat) => implies(k < cutPoints.length, startIndex <= cutPoints[k] && cutPoints[k] < endIndex))
+		//@ invariant forall((k: nat) => implies(k < cutPoints.length, !isToolResultMessage(entries[cutPoints[k]])))
 		const entry = entries[i];
 		switch (entry.type) {
 			case "message": {
@@ -337,7 +337,7 @@ function findValidCutPoints(entries: SessionTreeEntry[], startIndex: number, end
 //@ verify
 //@ requires 0 <= startIndex
 //@ requires entryIndex < entries.length
-//@ ensures \result === -1 || (startIndex <= \result && \result <= entryIndex && isTurnStarter(entries[\result]))
+//@ ensures $result === -1 || startIndex <= $result && $result <= entryIndex && isTurnStarter(entries[$result])
 export function findTurnStartIndex(entries: SessionTreeEntry[], entryIndex: number, startIndex: number): number {
 	for (let i = entryIndex; i >= startIndex; i--) {
 		//@ decreases (i - startIndex + 1).toNat
@@ -383,14 +383,14 @@ export function findCutPoint(
 	// tool_use turn) — toolResults never float free after a metadata entry or at
 	// the range start. This is how pi's session tree is built; if it can be
 	// violated, the no-orphan guarantee below does not hold.
-	//@ requires forall(j: nat, startIndex < j && j < endIndex && isToolResultMessage(entries[j]) ==> entries[j - 1].type === "message")
-	//@ ensures (startIndex <= \result.firstKeptEntryIndex && \result.firstKeptEntryIndex < endIndex && !isToolResultMessage(entries[\result.firstKeptEntryIndex])) || \result.firstKeptEntryIndex === startIndex
+	//@ requires forall((j: nat) => implies(startIndex < j && j < endIndex && isToolResultMessage(entries[j]), entries[j - 1].type === "message"))
+	//@ ensures startIndex <= $result.firstKeptEntryIndex && $result.firstKeptEntryIndex < endIndex && !isToolResultMessage(entries[$result.firstKeptEntryIndex]) || $result.firstKeptEntryIndex === startIndex
 	// No retained toolResult is orphaned: every toolResult in the kept suffix has
 	// its preceding tool_use turn retained too (the snap never splits a run). The
 	// startIndex fallback (no valid cut points) carries no such guarantee.
-	//@ ensures (forall(j: nat, \result.firstKeptEntryIndex <= j && j < endIndex && isToolResultMessage(entries[j]) ==> 0 <= j - 1 && \result.firstKeptEntryIndex <= j - 1 && entries[j - 1].type === "message")) || \result.firstKeptEntryIndex === startIndex
+	//@ ensures forall((j: nat) => implies($result.firstKeptEntryIndex <= j && j < endIndex && isToolResultMessage(entries[j]), 0 <= j - 1 && $result.firstKeptEntryIndex <= j - 1 && entries[j - 1].type === "message")) || $result.firstKeptEntryIndex === startIndex
 	// A split turn always names a real turn-starter at or before the cut, in range.
-	//@ ensures \result.isSplitTurn ==> (0 <= \result.turnStartIndex && \result.turnStartIndex < entries.length && startIndex <= \result.turnStartIndex && \result.turnStartIndex <= \result.firstKeptEntryIndex && isTurnStarter(entries[\result.turnStartIndex]))
+	//@ ensures implies($result.isSplitTurn, 0 <= $result.turnStartIndex && $result.turnStartIndex < entries.length && startIndex <= $result.turnStartIndex && $result.turnStartIndex <= $result.firstKeptEntryIndex && isTurnStarter(entries[$result.turnStartIndex]))
 	const cutPoints = findValidCutPoints(entries, startIndex, endIndex);
 
 	if (cutPoints.length === 0) {
@@ -404,8 +404,8 @@ export function findCutPoint(
 		//@ invariant i < endIndex
 		//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 		//@ invariant !isToolResultMessage(entries[cutIndex])
-		//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
-		//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
+		//@ invariant forall((k: nat) => implies(k < cutPoints.length, startIndex <= cutPoints[k] && cutPoints[k] < endIndex))
+		//@ invariant forall((k: nat) => implies(k < cutPoints.length, !isToolResultMessage(entries[cutPoints[k]])))
 		//@ done_with true
 		const entry = entries[i];
 		if (entry.type !== "message") continue;
@@ -416,8 +416,8 @@ export function findCutPoint(
 				//@ decreases cutPoints.length - c
 				//@ invariant startIndex <= cutIndex && cutIndex < endIndex
 				//@ invariant !isToolResultMessage(entries[cutIndex])
-				//@ invariant forall(k: nat, k < cutPoints.length ==> startIndex <= cutPoints[k] && cutPoints[k] < endIndex)
-				//@ invariant forall(k: nat, k < cutPoints.length ==> !isToolResultMessage(entries[cutPoints[k]]))
+				//@ invariant forall((k: nat) => implies(k < cutPoints.length, startIndex <= cutPoints[k] && cutPoints[k] < endIndex))
+				//@ invariant forall((k: nat) => implies(k < cutPoints.length, !isToolResultMessage(entries[cutPoints[k]])))
 				//@ done_with true
 				if (cutPoints[c] >= i) {
 					cutIndex = cutPoints[c];
