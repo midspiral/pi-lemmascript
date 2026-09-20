@@ -4,42 +4,41 @@
 -/
 import «compaction-cli.types»
 
-set_option loom.semantics.termination "total"
-set_option loom.semantics.choice "demonic"
+set_option velvet.semantics.termination "total"
 
-method isToolResultMessage (entry : SessionEntry) return (res : Bool)
+method isToolResultMessage (entry : SessionEntry) returns (res : Bool)
   do
     return Pure.isToolResultMessage entry
 
-method isTurnStarter (entry : SessionEntry) return (res : Bool)
+method isTurnStarter (entry : SessionEntry) returns (res : Bool)
   do
     return Pure.isTurnStarter entry
 
-method isCutPointMessage (message : AgentMessage) return (res : Bool)
+method isCutPointMessage (message : AgentMessage) returns (res : Bool)
   do
     return Pure.isCutPointMessage message
 
-method isTurnStartMessage (message : AgentMessage) return (res : Bool)
+method isTurnStartMessage (message : AgentMessage) returns (res : Bool)
   do
     return Pure.isTurnStartMessage message
 
-method isTurnStartEntry (entry : SessionEntry) return (res : Bool)
-  ensures res = false ∨ Pure.isTurnStarter entry
+method isTurnStartEntry (entry : SessionEntry) returns (res : Bool)
+  ensures ensures_1: (res = false ∨ Pure.isTurnStarter entry : Prop)
   do
     return Pure.isTurnStartEntry entry
 
-method findValidCutPoints (entries : Array SessionEntry) (startIndex : Int) (endIndex : Int) return (res : Array Int)
-  require 0 ≤ startIndex
-  require endIndex ≤ entries.size
-  ensures ∀ k : Nat, k < res.size → startIndex ≤ res[k]! ∧ res[k]! < endIndex
-  ensures ∀ k : Nat, k < res.size → ¬(Pure.isToolResultMessage entries[(res[k]!).toNat]!)
+method findValidCutPoints (entries : Array SessionEntry) (startIndex : Int) (endIndex : Int) returns (res : Array Int)
+  requires require_1: (0 ≤ startIndex : Prop)
+  requires require_2: (endIndex ≤ entries.size : Prop)
+  ensures ensures_1: (∀ k : Nat, k < res.size → startIndex ≤ res[k]! ∧ res[k]! < endIndex : Prop)
+  ensures ensures_2: (∀ k : Nat, k < res.size → ¬(Pure.isToolResultMessage entries[(res[k]!).toNat]!) : Prop)
   do
     let mut cutPoints : Array Int := #[]
     let mut i : Int := startIndex
     while i < endIndex
-      invariant startIndex ≤ i
-      invariant ∀ k : Nat, k < cutPoints.size → startIndex ≤ cutPoints[k]! ∧ cutPoints[k]! < endIndex
-      invariant ∀ k : Nat, k < cutPoints.size → ¬(Pure.isToolResultMessage entries[(cutPoints[k]!).toNat]!)
+      invariant invariant_1: (startIndex ≤ i : Prop)
+      invariant invariant_2: (∀ k : Nat, k < cutPoints.size → startIndex ≤ cutPoints[k]! ∧ cutPoints[k]! < endIndex : Prop)
+      invariant invariant_3: (∀ k : Nat, k < cutPoints.size → ¬(Pure.isToolResultMessage entries[(cutPoints[k]!).toNat]!) : Prop)
       decreasing (endIndex - i).toNat
     do
       let entry := entries[i.toNat]!
@@ -51,18 +50,18 @@ method findValidCutPoints (entries : Array SessionEntry) (startIndex : Int) (end
         i := i + 1
     return cutPoints
 
-method findTurnStartIndex (entries : Array SessionEntry) (entryIndex : Int) (startIndex : Int) return (res : Int)
-  require 0 ≤ startIndex
-  require entryIndex < entries.size
-  ensures res = -1 ∨ startIndex ≤ res ∧ res ≤ entryIndex ∧ Pure.isTurnStarter entries[res.toNat]!
+method findTurnStartIndex (entries : Array SessionEntry) (entryIndex : Int) (startIndex : Int) returns (res : Int)
+  requires require_1: (0 ≤ startIndex : Prop)
+  requires require_2: (entryIndex < entries.size : Prop)
+  ensures ensures_1: (res = -1 ∨ startIndex ≤ res ∧ res ≤ entryIndex ∧ Pure.isTurnStarter entries[res.toNat]! : Prop)
   do
     let mut i : Int := entryIndex
     let mut _loopRet : Int := -1
     while i ≥ startIndex
-      invariant i ≤ entryIndex
-      invariant _loopRet = -1 ∨ startIndex ≤ _loopRet ∧ _loopRet ≤ entryIndex ∧ Pure.isTurnStarter entries[_loopRet.toNat]!
-      done_with True
+      invariant invariant_1: (i ≤ entryIndex : Prop)
+      invariant invariant_2: (_loopRet = -1 ∨ startIndex ≤ _loopRet ∧ _loopRet ≤ entryIndex ∧ Pure.isTurnStarter entries[_loopRet.toNat]! : Prop)
       decreasing (i - startIndex + 1).toNat
+      done_with (true : Prop)
     do
       let _t0 ← isTurnStartEntry entries[i.toNat]!
       if _t0 then
@@ -71,13 +70,13 @@ method findTurnStartIndex (entries : Array SessionEntry) (entryIndex : Int) (sta
       i := i - 1
     return _loopRet
 
-method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex : Int) (keepRecentTokens : Int) return (res : CutPointResult)
-  require 0 ≤ startIndex
-  require endIndex ≤ entries.size
-  require ∀ j : Nat, startIndex < j → j < endIndex → Pure.isToolResultMessage entries[j]! → (match entries[j - 1]! with | .message .. => true | _ => false)
-  ensures startIndex ≤ res.firstKeptEntryIndex ∧ res.firstKeptEntryIndex < endIndex ∧ ¬(Pure.isToolResultMessage entries[(res.firstKeptEntryIndex).toNat]!) ∨ res.firstKeptEntryIndex = startIndex
-  ensures (∀ j : Nat, res.firstKeptEntryIndex ≤ j → j < endIndex → Pure.isToolResultMessage entries[j]! → 0 ≤ j - 1 ∧ res.firstKeptEntryIndex ≤ j - 1 ∧ (match entries[j - 1]! with | .message .. => true | _ => false)) ∨ res.firstKeptEntryIndex = startIndex
-  ensures res.isSplitTurn → 0 ≤ res.turnStartIndex ∧ res.turnStartIndex < entries.size ∧ startIndex ≤ res.turnStartIndex ∧ res.turnStartIndex ≤ res.firstKeptEntryIndex ∧ Pure.isTurnStarter entries[(res.turnStartIndex).toNat]!
+method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex : Int) (keepRecentTokens : Int) returns (res : CutPointResult)
+  requires require_1: (0 ≤ startIndex : Prop)
+  requires require_2: (endIndex ≤ entries.size : Prop)
+  requires require_3: (∀ j : Nat, startIndex < j → j < endIndex → Pure.isToolResultMessage entries[j]! → (match entries[j - 1]! with | .message .. => true | _ => false) : Prop)
+  ensures ensures_1: (startIndex ≤ res.firstKeptEntryIndex ∧ res.firstKeptEntryIndex < endIndex ∧ ¬(Pure.isToolResultMessage entries[(res.firstKeptEntryIndex).toNat]!) ∨ res.firstKeptEntryIndex = startIndex : Prop)
+  ensures ensures_2: ((∀ j : Nat, res.firstKeptEntryIndex ≤ j → j < endIndex → Pure.isToolResultMessage entries[j]! → 0 ≤ j - 1 ∧ res.firstKeptEntryIndex ≤ j - 1 ∧ (match entries[j - 1]! with | .message .. => true | _ => false)) ∨ res.firstKeptEntryIndex = startIndex : Prop)
+  ensures ensures_3: (res.isSplitTurn → 0 ≤ res.turnStartIndex ∧ res.turnStartIndex < entries.size ∧ startIndex ≤ res.turnStartIndex ∧ res.turnStartIndex ≤ res.firstKeptEntryIndex ∧ Pure.isTurnStarter entries[(res.turnStartIndex).toNat]! : Prop)
   do
     let _t1 ← findValidCutPoints entries startIndex endIndex
     let mut cutPoints : Array Int := _t1
@@ -87,14 +86,14 @@ method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex 
     let mut cutIndex : Int := cutPoints[0]!
     let mut i : Int := endIndex - 1
     while i ≥ startIndex
-      invariant i < endIndex
-      invariant startIndex ≤ cutIndex
-      invariant cutIndex < endIndex
-      invariant ¬(Pure.isToolResultMessage entries[cutIndex.toNat]!)
-      invariant ∀ k : Nat, k < cutPoints.size → startIndex ≤ cutPoints[k]! ∧ cutPoints[k]! < endIndex
-      invariant ∀ k : Nat, k < cutPoints.size → ¬(Pure.isToolResultMessage entries[(cutPoints[k]!).toNat]!)
-      done_with True
+      invariant invariant_1: (i < endIndex : Prop)
+      invariant invariant_2: (startIndex ≤ cutIndex : Prop)
+      invariant invariant_3: (cutIndex < endIndex : Prop)
+      invariant invariant_4: (¬(Pure.isToolResultMessage entries[cutIndex.toNat]!) : Prop)
+      invariant invariant_5: (∀ k : Nat, k < cutPoints.size → startIndex ≤ cutPoints[k]! ∧ cutPoints[k]! < endIndex : Prop)
+      invariant invariant_6: (∀ k : Nat, k < cutPoints.size → ¬(Pure.isToolResultMessage entries[(cutPoints[k]!).toNat]!) : Prop)
       decreasing (i - startIndex + 1).toNat
+      done_with (true : Prop)
     do
       let entry := entries[i.toNat]!
       let messageTokens := ((sessionEntryToContextMessages entry).foldl (fun sum message => sum + estimateTokens message) 0)
@@ -105,13 +104,13 @@ method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex 
         if accumulatedTokens ≥ keepRecentTokens then
           let mut c : Nat := 0
           while c < cutPoints.size
-            invariant startIndex ≤ cutIndex
-            invariant cutIndex < endIndex
-            invariant ¬(Pure.isToolResultMessage entries[cutIndex.toNat]!)
-            invariant ∀ k : Nat, k < cutPoints.size → startIndex ≤ cutPoints[k]! ∧ cutPoints[k]! < endIndex
-            invariant ∀ k : Nat, k < cutPoints.size → ¬(Pure.isToolResultMessage entries[(cutPoints[k]!).toNat]!)
-            done_with True
+            invariant invariant_7: (startIndex ≤ cutIndex : Prop)
+            invariant invariant_8: (cutIndex < endIndex : Prop)
+            invariant invariant_9: (¬(Pure.isToolResultMessage entries[cutIndex.toNat]!) : Prop)
+            invariant invariant_10: (∀ k : Nat, k < cutPoints.size → startIndex ≤ cutPoints[k]! ∧ cutPoints[k]! < endIndex : Prop)
+            invariant invariant_11: (∀ k : Nat, k < cutPoints.size → ¬(Pure.isToolResultMessage entries[(cutPoints[k]!).toNat]!) : Prop)
             decreasing cutPoints.size - c
+            done_with (true : Prop)
           do
             if cutPoints[c]! ≥ i then
               cutIndex := cutPoints[c]!
@@ -120,11 +119,11 @@ method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex 
           break
         i := i - 1
     while cutIndex > startIndex
-      invariant startIndex ≤ cutIndex
-      invariant cutIndex < endIndex
-      invariant ¬(Pure.isToolResultMessage entries[cutIndex.toNat]!)
-      done_with True
+      invariant invariant_12: (startIndex ≤ cutIndex : Prop)
+      invariant invariant_13: (cutIndex < endIndex : Prop)
+      invariant invariant_14: (¬(Pure.isToolResultMessage entries[cutIndex.toNat]!) : Prop)
       decreasing (cutIndex - startIndex).toNat
+      done_with (true : Prop)
     do
       let prevEntry := entries[(cutIndex - 1).toNat]!
       if (match prevEntry with | .compaction .. => true | _ => false) || (sessionEntryToContextMessages prevEntry).size > 0 then

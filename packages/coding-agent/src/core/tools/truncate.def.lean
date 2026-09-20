@@ -4,18 +4,17 @@
 -/
 import «truncate.types»
 
-set_option loom.semantics.termination "total"
-set_option loom.semantics.choice "demonic"
+set_option velvet.semantics.termination "total"
 
 def DEFAULT_MAX_LINES : Int := 2000
 
 def DEFAULT_MAX_BYTES : Int := 50 * 1024
 
-method truncateHead (content : String) (options : TruncationOptions) return (res : TruncationResult)
-  require content.length > 0
-  ensures res.maxLines ≥ 0 → res.outputLines ≤ res.maxLines
-  ensures res.outputLines ≤ res.totalLines
-  ensures (match res.truncatedBy with | .some _value => _value == "bytes" | .none => false) → ¬(res.firstLineExceedsLimit) → res.outputLines < res.maxLines
+method truncateHead (content : String) (options : TruncationOptions) returns (res : TruncationResult)
+  requires require_1: (content.length > 0 : Prop)
+  ensures ensures_1: (res.maxLines ≥ 0 → res.outputLines ≤ res.maxLines : Prop)
+  ensures ensures_2: (res.outputLines ≤ res.totalLines : Prop)
+  ensures ensures_3: ((match res.truncatedBy with | .some _value => _value == "bytes" | .none => false) → ¬(res.firstLineExceedsLimit) → res.outputLines < res.maxLines : Prop)
   do
     let maxLines : Int := (match options.maxLines with | .some _oc0_val => _oc0_val | .none => DEFAULT_MAX_LINES)
     let maxBytes : Int := (match options.maxBytes with | .some _oc1_val => _oc1_val | .none => DEFAULT_MAX_BYTES)
@@ -32,13 +31,13 @@ method truncateHead (content : String) (options : TruncationOptions) return (res
     let mut truncatedBy : String := "lines"
     let mut i : Int := 0
     while i < lines.size && i < maxLines
-      invariant 0 ≤ i
-      invariant i ≤ lines.size
-      invariant i = 0 ∨ i ≤ maxLines
-      invariant outputLinesArr.size = i
-      invariant outputBytesCount ≤ maxBytes
-      done_with True
+      invariant invariant_1: (0 ≤ i : Prop)
+      invariant invariant_2: (i ≤ lines.size : Prop)
+      invariant invariant_3: (i = 0 ∨ i ≤ maxLines : Prop)
+      invariant invariant_4: (outputLinesArr.size = i : Prop)
+      invariant invariant_5: (outputBytesCount ≤ maxBytes : Prop)
       decreasing (lines.size - i).toNat
+      done_with (true : Prop)
     do
       let line := lines[i.toNat]!
       let lineBytes := Buffer_byteLength line "utf-8" + (if i > 0 then 1 else 0)
@@ -54,11 +53,11 @@ method truncateHead (content : String) (options : TruncationOptions) return (res
     let finalOutputBytes := Buffer_byteLength outputContent "utf-8"
     return { content := outputContent, truncated := true, truncatedBy := some truncatedBy, totalLines := totalLines, totalBytes := totalBytes, outputLines := outputLinesArr.size, outputBytes := finalOutputBytes, lastLinePartial := false, firstLineExceedsLimit := false, maxLines := maxLines, maxBytes := maxBytes }
 
-method truncateTail (content : String) (options : TruncationOptions) return (res : TruncationResult)
-  require content.length > 0
-  ensures res.maxLines ≥ 0 → res.outputLines ≤ res.maxLines
-  ensures res.outputLines ≤ res.totalLines
-  ensures res.maxBytes ≥ 0 → (match res.truncatedBy with | .some _value => _value == "bytes" | .none => false) → ¬(res.lastLinePartial) → res.outputLines < res.maxLines
+method truncateTail (content : String) (options : TruncationOptions) returns (res : TruncationResult)
+  requires require_1: (content.length > 0 : Prop)
+  ensures ensures_1: (res.maxLines ≥ 0 → res.outputLines ≤ res.maxLines : Prop)
+  ensures ensures_2: (res.outputLines ≤ res.totalLines : Prop)
+  ensures ensures_3: (res.maxBytes ≥ 0 → (match res.truncatedBy with | .some _value => _value == "bytes" | .none => false) → ¬(res.lastLinePartial) → res.outputLines < res.maxLines : Prop)
   do
     let maxLines : Int := (match options.maxLines with | .some _oc2_val => _oc2_val | .none => DEFAULT_MAX_LINES)
     let maxBytes : Int := (match options.maxBytes with | .some _oc3_val => _oc3_val | .none => DEFAULT_MAX_BYTES)
@@ -73,13 +72,13 @@ method truncateTail (content : String) (options : TruncationOptions) return (res
     let mut lastLinePartial : Bool := false
     let mut i : Int := lines.size - 1
     while i ≥ 0 && outputLinesArr.size < maxLines && truncatedBy ≠ "bytes"
-      invariant i ≥ -1
-      invariant lastLinePartial → truncatedBy = "bytes"
-      invariant truncatedBy ≠ "bytes" → ¬(lastLinePartial) → outputLinesArr.size = lines.size - 1 - i
-      invariant truncatedBy = "bytes" → outputLinesArr.size ≤ lines.size
-      invariant outputLinesArr.size = 0 ∨ outputLinesArr.size ≤ maxLines
-      invariant outputBytesCount ≤ maxBytes ∨ outputBytesCount = 0 ∨ lastLinePartial
-      invariant truncatedBy = "bytes" → ¬(lastLinePartial) → outputLinesArr.size < maxLines
+      invariant invariant_1: (i ≥ -1 : Prop)
+      invariant invariant_2: (lastLinePartial → truncatedBy = "bytes" : Prop)
+      invariant invariant_3: (truncatedBy ≠ "bytes" → ¬(lastLinePartial) → outputLinesArr.size = lines.size - 1 - i : Prop)
+      invariant invariant_4: (truncatedBy = "bytes" → outputLinesArr.size ≤ lines.size : Prop)
+      invariant invariant_5: (outputLinesArr.size = 0 ∨ outputLinesArr.size ≤ maxLines : Prop)
+      invariant invariant_6: (outputBytesCount ≤ maxBytes ∨ outputBytesCount = 0 ∨ lastLinePartial : Prop)
+      invariant invariant_7: (truncatedBy = "bytes" → ¬(lastLinePartial) → outputLinesArr.size < maxLines : Prop)
       decreasing (i + 1).toNat
     do
       let line := lines[i.toNat]!
