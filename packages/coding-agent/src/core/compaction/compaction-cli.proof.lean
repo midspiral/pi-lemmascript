@@ -65,26 +65,29 @@ prove_correct findTurnStartIndex by
 
 set_option maxHeartbeats 4000000 in
 prove_correct findCutPoint by
-  -- Generate the nested loop's obligations in a separate VCG pass.
-  velvet_vcgen -errorOnMissingSpec [findCutPoint]
-  all_goals try velvet_vcgen
-  all_goals expose_names
-  all_goals try assumption
-  all_goals try omega
-  all_goals try grind (splits := 0)
-  -- Every retained tool result keeps its tool-use entry.
-  · left
-    intro j hcj hje htr
-    have hjne : cutIndex ≠ (↑j : Int) := fun he =>
-      invariant_14 (by rw [show cutIndex.toNat = j from by omega]; exact htr)
-    exact ⟨by omega, by grind, require_3 j (by grind) hje htr⟩
-  -- A split turn reports an actual turn boundary.
-  · intro h
-    cases a_1 with
-    | true => simp at h
-    | false =>
-      simp only [Bool.not_false, Bool.true_and, decide_eq_true_eq] at h ⊢
-      rcases ensures_1_2 with h2 | ⟨ha, hb, hc⟩
-      · exact absurd h2 h
-      · exact ⟨by omega, by omega, ha, hb, hc⟩
+  velvet_vcgen -errorOnMissingSpec [findCutPoint] with
+    (expose_names
+     first
+       (case termination => tactic => omega)
+       (finish (splits := 0))
+       (tactic =>
+         first
+         -- This nested loop needs a fresh VC generation pass.
+         | (solve | velvet_vcgen with finish (splits := 0))
+         | omega
+         -- Every retained tool result keeps its tool-use entry.
+         | (left
+            intro j hcj hje htr
+            have hjne : cutIndex ≠ (↑j : Int) := fun he =>
+              invariant_14 (by rw [show cutIndex.toNat = j from by omega]; exact htr)
+            exact ⟨by omega, by grind, require_3 j (by grind) hje htr⟩)
+         -- A split turn reports an actual turn boundary.
+         | (intro h
+            cases a_1 with
+            | true => simp at h
+            | false =>
+              simp only [Bool.not_false, Bool.true_and, decide_eq_true_eq] at h ⊢
+              rcases ensures_1_2 with h2 | ⟨ha, hb, hc⟩
+              · exact absurd h2 h
+              · exact ⟨by omega, by omega, ha, hb, hc⟩)))
 end LoopProofs
