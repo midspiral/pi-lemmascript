@@ -4,12 +4,11 @@
 -/
 import «changelog.types»
 
-set_option loom.semantics.termination "total"
-set_option loom.semantics.choice "demonic"
+set_option velvet.semantics.termination "total"
 
-method compareVersions (v1 : ChangelogEntry) (v2 : ChangelogEntry) return (res : Int)
-  ensures res > 0 ↔ v1.major > v2.major ∨ v1.major = v2.major ∧ v1.minor > v2.minor ∨ v1.major = v2.major ∧ v1.minor = v2.minor ∧ v1.patch > v2.patch
-  ensures res < 0 ↔ v1.major < v2.major ∨ v1.major = v2.major ∧ v1.minor < v2.minor ∨ v1.major = v2.major ∧ v1.minor = v2.minor ∧ v1.patch < v2.patch
-  ensures res = 0 ↔ v1.major = v2.major ∧ v1.minor = v2.minor ∧ v1.patch = v2.patch
+method compareVersions (v1 : ChangelogEntry) (v2 : ChangelogEntry) returns (res : Int)
+  ensures ensures_1: (res > 0 ↔ v1.major > v2.major ∨ v1.major = v2.major ∧ v1.minor > v2.minor ∨ v1.major = v2.major ∧ v1.minor = v2.minor ∧ v1.patch > v2.patch : Prop)
+  ensures ensures_2: (res < 0 ↔ v1.major < v2.major ∨ v1.major = v2.major ∧ v1.minor < v2.minor ∨ v1.major = v2.major ∧ v1.minor = v2.minor ∧ v1.patch < v2.patch : Prop)
+  ensures ensures_3: (res = 0 ↔ v1.major = v2.major ∧ v1.minor = v2.minor ∧ v1.patch = v2.patch : Prop)
   do
     return Pure.compareVersions v1 v2
