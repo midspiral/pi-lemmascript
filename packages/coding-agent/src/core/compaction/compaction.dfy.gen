@@ -232,7 +232,13 @@ method findCutPoint(entries: seq<SessionEntry>, startIndex: int, endIndex: int, 
   var cutEntry := entries[cutIndex];
   var i_t2 := isTurnStartEntry(cutEntry);
   var startsTurn := i_t2;
-  var i_t3 := findTurnStartIndex(entries, cutIndex, startIndex);
-  var turnStartIndex := (if startsTurn then -1 else i_t3);
+  var i_branch0: int := *;
+  if startsTurn {
+    i_branch0 := -1;
+  } else {
+    var i_t3 := findTurnStartIndex(entries, cutIndex, startIndex);
+    i_branch0 := i_t3;
+  }
+  var turnStartIndex := i_branch0;
   return CutPointResult(cutIndex, turnStartIndex, (!(startsTurn) && (turnStartIndex != -1)));
 }

@@ -216,7 +216,13 @@ method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: i
   }
   var cutEntry := entries[cutIndex];
   var isUserMessage := (cutEntry.message? && cutEntry.message.role.user?);
-  var i_t1 := findTurnStartIndex(entries, cutIndex, startIndex);
-  var turnStartIndex := (if isUserMessage then -1 else i_t1);
+  var i_branch0: int := *;
+  if isUserMessage {
+    i_branch0 := -1;
+  } else {
+    var i_t1 := findTurnStartIndex(entries, cutIndex, startIndex);
+    i_branch0 := i_t1;
+  }
+  var turnStartIndex := i_branch0;
   return CutPointResult(cutIndex, turnStartIndex, (!(isUserMessage) && (turnStartIndex != -1)));
 }

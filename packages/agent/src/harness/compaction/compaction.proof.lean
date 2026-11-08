@@ -37,9 +37,7 @@ prove_correct findCutPoint by
          | (intro hsplit
             rcases ensures_1_1 with h1 | ⟨hsx, hxc, hts⟩
             · subst h1; simp_all
-            · split_ifs with hc
-              · simp_all
-              · exact ⟨by omega, by omega, by omega, by omega, hts⟩)
+            · exact ⟨by omega, by omega, hsx, hxc, hts⟩)
          | (simp only [Pure.isToolResultMessage]
             split <;> simp_all)))
 end LoopProofs

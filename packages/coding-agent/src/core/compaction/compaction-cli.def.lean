@@ -132,6 +132,11 @@ method findCutPoint (entries : Array SessionEntry) (startIndex : Int) (endIndex 
     let cutEntry := entries[cutIndex.toNat]!
     let _t2 ← isTurnStartEntry cutEntry
     let startsTurn := _t2
-    let _t3 ← findTurnStartIndex entries cutIndex startIndex
-    let turnStartIndex := if startsTurn then -1 else _t3
+    let mut _branch0 : Int := (default : Int)
+    if startsTurn then
+      _branch0 := -1
+    else
+      let _t3 ← findTurnStartIndex entries cutIndex startIndex
+      _branch0 := _t3
+    let turnStartIndex := _branch0
     return { firstKeptEntryIndex := cutIndex, turnStartIndex := turnStartIndex, isSplitTurn := !(startsTurn) && turnStartIndex ≠ -1 }

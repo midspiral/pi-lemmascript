@@ -142,6 +142,11 @@ method findCutPoint (entries : Array SessionTreeEntry) (startIndex : Int) (endIn
         cutIndex := cutIndex - 1
     let cutEntry := entries[cutIndex.toNat]!
     let isUserMessage := (match cutEntry with | .message .. => true | _ => false) && ((match cutEntry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role = Role.user
-    let _t1 ← findTurnStartIndex entries cutIndex startIndex
-    let turnStartIndex := if isUserMessage then -1 else _t1
+    let mut _branch0 : Int := (default : Int)
+    if isUserMessage then
+      _branch0 := -1
+    else
+      let _t1 ← findTurnStartIndex entries cutIndex startIndex
+      _branch0 := _t1
+    let turnStartIndex := _branch0
     return { firstKeptEntryIndex := cutIndex, turnStartIndex := turnStartIndex, isSplitTurn := !(isUserMessage) && turnStartIndex ≠ -1 }
