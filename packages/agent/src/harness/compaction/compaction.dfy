@@ -70,8 +70,8 @@ method findValidCutPoints(entries: seq<SessionTreeEntry>, startIndex: int, endIn
   {
     var entry := entries[i];
     match entry {
-      case message(i_entry_message, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
-        var role := i_entry_message.role;
+      case message(_, _, _, _) =>
+        var role := entry.message.role;
         match role {
           case bashExecution =>
             cutPoints := (cutPoints + [i]);
@@ -88,25 +88,25 @@ method findValidCutPoints(entries: seq<SessionTreeEntry>, startIndex: int, endIn
           case toolResult =>
 
         }
-      case thinking_level_change(i_entry_thinkingLevel, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case thinking_level_change(_, _, _, _) =>
 
-      case model_change(i_entry_provider, i_entry_modelId, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case model_change(_, _, _, _, _) =>
 
-      case active_tools_change(i_entry_activeToolNames, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case active_tools_change(_, _, _, _) =>
 
-      case compaction(i_entry_summary, i_entry_firstKeptEntryId, i_entry_tokensBefore, i_entry_details, i_entry_fromHook, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case compaction(_, _, _, _, _, _, _, _) =>
 
-      case branch_summary(i_entry_fromId, i_entry_summary, i_entry_details, i_entry_fromHook, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case branch_summary(_, _, _, _, _, _, _) =>
 
-      case custom(i_entry_customType, i_entry_data, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case custom(_, _, _, _, _) =>
 
-      case custom_message(i_entry_customType, i_entry_content, i_entry_details, i_entry_display, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case custom_message(_, _, _, _, _, _, _) =>
 
-      case label_(i_entry_targetId, i_entry_label, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case label_(_, _, _, _, _) =>
 
-      case session_info(i_entry_name, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case session_info(_, _, _, _) =>
 
-      case leaf(i_entry_targetId, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case leaf(_, _, _, _) =>
 
     }
     if (entry.branch_summary? || entry.custom_message?) {
@@ -132,8 +132,8 @@ method findTurnStartIndex(entries: seq<SessionTreeEntry>, entryIndex: int, start
       return i;
     }
     match entry {
-      case message(i_entry_message, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
-        var role := i_entry_message.role;
+      case message(_, _, _, _) =>
+        var role := entry.message.role;
         if (role.user? || role.bashExecution?) {
           return i;
         }
@@ -172,8 +172,8 @@ method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: i
   {
     var entry := entries[i];
     match entry {
-      case message(i_entry_message, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
-        var messageTokens := estimateTokens(i_entry_message);
+      case message(_, _, _, _) =>
+        var messageTokens := estimateTokens(entry.message);
         accumulatedTokens := (accumulatedTokens + messageTokens);
         if (accumulatedTokens >= keepRecentTokens) {
           var c := 0;
@@ -206,9 +206,9 @@ method findCutPoint(entries: seq<SessionTreeEntry>, startIndex: int, endIndex: i
   {
     var prevEntry := entries[(cutIndex - 1)];
     match prevEntry {
-      case compaction(i_prevEntry_summary, i_prevEntry_firstKeptEntryId, i_prevEntry_tokensBefore, i_prevEntry_details, i_prevEntry_fromHook, i_prevEntry_id, i_prevEntry_parentId, i_prevEntry_timestamp) =>
+      case compaction(_, _, _, _, _, _, _, _) =>
         break;
-      case message(i_prevEntry_message, i_prevEntry_id, i_prevEntry_parentId, i_prevEntry_timestamp) =>
+      case message(_, _, _, _) =>
         break;
       case _ =>
         cutIndex := (cutIndex - 1);

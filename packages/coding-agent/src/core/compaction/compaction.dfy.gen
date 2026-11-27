@@ -134,7 +134,7 @@ method findValidCutPoints(entries: seq<SessionEntry>, startIndex: int, endIndex:
   {
     var entry := entries[i];
     match entry {
-      case compaction(i_entry_summary, i_entry_firstKeptEntryId, i_entry_tokensBefore, i_entry_details, i_entry_fromHook, i_entry_id, i_entry_parentId, i_entry_timestamp) =>
+      case compaction(_, _, _, _, _, _, _, _) =>
         i := (i + 1);
       case _ =>
         if (exists x :: x in sessionEntryToContextMessages(entry) && isCutPointMessage(x)) {

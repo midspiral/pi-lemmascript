@@ -30,8 +30,7 @@ method findValidCutPoints (entries : Array SessionTreeEntry) (startIndex : Int) 
     do
       let entry := entries[i.toNat]!
       if (match entry with | .message .. => true | _ => false) then
-        let _entry_message := (match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))
-        let role := _entry_message.role
+        let role := ((match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role
         if role = Role.bashExecution then
           cutPoints := Array.push cutPoints i
         else if role = Role.custom then
@@ -69,8 +68,7 @@ method findTurnStartIndex (entries : Array SessionTreeEntry) (entryIndex : Int) 
         _loopRet := i
         break
       if (match entry with | .message .. => true | _ => false) then
-        let _entry_message := (match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))
-        let role := _entry_message.role
+        let role := ((match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role
         if role = Role.user || role = Role.bashExecution then
           _loopRet := i
           break
@@ -104,8 +102,7 @@ method findCutPoint (entries : Array SessionTreeEntry) (startIndex : Int) (endIn
     do
       let entry := entries[i.toNat]!
       if (match entry with | .message .. => true | _ => false) then
-        let _entry_message := (match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))
-        let messageTokens := estimateTokens _entry_message
+        let messageTokens := estimateTokens (match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))
         accumulatedTokens := accumulatedTokens + messageTokens
         if accumulatedTokens ≥ keepRecentTokens then
           let mut c : Nat := 0
