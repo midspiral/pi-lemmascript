@@ -56,28 +56,26 @@ method findTurnStartIndex (entries : Array SessionTreeEntry) (entryIndex : Int) 
   ensures ensures_1: (res = -1 ∨ startIndex ≤ res ∧ res ≤ entryIndex ∧ Pure.isTurnStarter entries[res.toNat]! : Prop)
   do
     let mut i : Int := entryIndex
-    let mut _loopReturned : Bool := false
-    let mut _loopRet : Int := 0
+    let mut _loopRet : Option Int := none
     while i ≥ startIndex
       invariant invariant_1: (i ≤ entryIndex : Prop)
-      invariant invariant_2: (_loopReturned → _loopRet = -1 ∨ startIndex ≤ _loopRet ∧ _loopRet ≤ entryIndex ∧ Pure.isTurnStarter entries[_loopRet.toNat]! : Prop)
+      invariant invariant_2: (∀ (_h3 : (_loopRet.isSome) = true), (if _h2 : ((_loopRet).get (by grind)) = -1 then True else ((if _h1 : (if _h0 : startIndex ≤ ((_loopRet).get (by grind)) then (((_loopRet).get (by grind)) ≤ entryIndex) else False) then (Pure.isTurnStarter entries[(((_loopRet).get (by grind))).toNat]!) else False))) : Prop)
       decreasing (i - startIndex + 1).toNat
       done_with (true : Prop)
     do
       let entry := entries[i.toNat]!
       if (match entry with | .branch_summary .. => true | _ => false) || (match entry with | .custom_message .. => true | _ => false) then
-        _loopRet := i
-        _loopReturned := true
+        _loopRet := some i
         break
       if (match entry with | .message .. => true | _ => false) then
         let role := ((match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role
         if role = Role.user || role = Role.bashExecution then
-          _loopRet := i
-          _loopReturned := true
+          _loopRet := some i
           break
       i := i - 1
-    if _loopReturned then
-      return _loopRet
+    if h__loopRet : (_loopRet).isSome = true then
+      let _loopRet_val := (_loopRet).get h__loopRet
+      return _loopRet_val
     else
       return -1
 
