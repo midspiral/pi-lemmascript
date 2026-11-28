@@ -56,24 +56,30 @@ method findTurnStartIndex (entries : Array SessionTreeEntry) (entryIndex : Int) 
   ensures ensures_1: (res = -1 ∨ startIndex ≤ res ∧ res ≤ entryIndex ∧ Pure.isTurnStarter entries[res.toNat]! : Prop)
   do
     let mut i : Int := entryIndex
-    let mut _loopRet : Int := -1
+    let mut _loopReturned : Bool := false
+    let mut _loopRet : Int := 0
     while i ≥ startIndex
       invariant invariant_1: (i ≤ entryIndex : Prop)
-      invariant invariant_2: (_loopRet = -1 ∨ startIndex ≤ _loopRet ∧ _loopRet ≤ entryIndex ∧ Pure.isTurnStarter entries[_loopRet.toNat]! : Prop)
+      invariant invariant_2: (_loopReturned → _loopRet = -1 ∨ startIndex ≤ _loopRet ∧ _loopRet ≤ entryIndex ∧ Pure.isTurnStarter entries[_loopRet.toNat]! : Prop)
       decreasing (i - startIndex + 1).toNat
       done_with (true : Prop)
     do
       let entry := entries[i.toNat]!
       if (match entry with | .branch_summary .. => true | _ => false) || (match entry with | .custom_message .. => true | _ => false) then
         _loopRet := i
+        _loopReturned := true
         break
       if (match entry with | .message .. => true | _ => false) then
         let role := ((match entry with | .message _v _ _ _ => _v | _ => (default : AgentMessage))).role
         if role = Role.user || role = Role.bashExecution then
           _loopRet := i
+          _loopReturned := true
           break
       i := i - 1
-    return _loopRet
+    if _loopReturned then
+      return _loopRet
+    else
+      return -1
 
 method findCutPoint (entries : Array SessionTreeEntry) (startIndex : Int) (endIndex : Int) (keepRecentTokens : Int) returns (res : CutPointResult)
   requires require_1: (0 ≤ startIndex : Prop)
